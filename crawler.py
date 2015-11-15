@@ -23,7 +23,7 @@ def Twitter_crawler():
     content_list = list()
 
     for result in query["statuses"]:
-        print "@%s %s" % (result["user"]["screen_name"], result["text"])
+        print "@%s %s" % (result["user"]["screen_name"].encode("UTF-8"), result["text"].encode("UTF-8"))
         cur_text = result["text"].split(" ")
         for word in cur_text:
             if word.startswith("http"):
@@ -38,7 +38,7 @@ def Twitter_crawler():
                     break
                 content = extractor.getText()
                 if content is not "":
-                    content_list.append({"title": result, "article": content})
+                    content_list.append({"title": result["text"], "article": content})
                 break
 
     with open(COMPANY+".TWITTER.json", "w") as js_file:
