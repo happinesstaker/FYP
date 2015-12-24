@@ -2,10 +2,12 @@ __author__ = 'Jiajie YANG'
 
 from twitter import *
 import json
+import hashlib
 from boilerpipe.extract import Extractor
+import psycopg2
 
 def Twitter_crawler():
-    COMPANY = 'airbnb'
+    COMPANY = 'cisco'
 
     # Twitter source
     config = {"access_key": "3780616332-PArbYD6xifva5Zo9oTUqg6yJlPwYa9WdR53Tdlk",
@@ -21,7 +23,6 @@ def Twitter_crawler():
 
     urllist = list()
     content_list = list()
-
     for result in query["statuses"]:
         print "@%s %s" % (result["user"]["screen_name"].encode("UTF-8"), result["text"].encode("UTF-8"))
         cur_text = result["text"].split(" ")
@@ -38,11 +39,22 @@ def Twitter_crawler():
                     break
                 content = extractor.getText()
                 if content is not "":
-                    content_list.append({"title": result["text"], "article": content})
+                    content_list.append({"title": result["text"].encode("UTF-8"), "article": content.encode("UTF-8"), "link":utf_word, "source": "TWITTER", "hash": hashlib.sha224(result["text"].encode("UTF-8")).hexdigest()})
                 break
 
     with open(COMPANY+".TWITTER.json", "w") as js_file:
         json.dump(content_list, js_file)
+    try:
+        conn = psycopg2.connect("dbname='Articles' user='FYP' password='FYP' host='localhost' port='5432'")
+    except:
+        print "Cannot Connect Database!"
+        return
+
+    cur = conn.cursor()
+    cur.executemany("""INSERT INTO article_table VALUES (%(hash)s, %(title)s, %(link)s, %(source)s, %(article)s)""", content_list)
+    conn.commit()
+    cur.close()
+    conn.close()
 
 if __name__ == '__main__':
     Twitter_crawler()
