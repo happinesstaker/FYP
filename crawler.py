@@ -39,7 +39,7 @@ def Twitter_crawler():
                     break
                 content = extractor.getText()
                 if content is not "":
-                    content_list.append({"title": result["text"].encode("UTF-8"), "article": content.encode("UTF-8"), "link":utf_word, "source": "TWITTER", "hash": hashlib.sha224(result["text"].encode("UTF-8")).hexdigest()})
+                    content_list.append({"title": (result["text"].encode("UTF-8"))[:290], "article": (content.encode("UTF-8"))[:2950], "link":utf_word, "source": "TWITTER", "hash": hashlib.sha224(result["text"].encode("UTF-8")).hexdigest()})
                 break
 
     with open(COMPANY+".TWITTER.json", "w") as js_file:
@@ -51,7 +51,13 @@ def Twitter_crawler():
         return
 
     cur = conn.cursor()
-    cur.executemany("""INSERT INTO article_table VALUES (%(hash)s, %(title)s, %(link)s, %(source)s, %(article)s)""", content_list)
+    cur.execute("""PREPARE myplan as INSERT INTO article_table VALUES ($1, $2, $3, $4, $5)""")
+    for item in content_list:
+        try:
+            cur.execute("""execute myplan (%s, %s, %s, %s, %s)""", (item["hash"], item["title"], item["link"], item["source"], item["article"]))
+        except:
+            print "\n!Identical Item Inserted!\n"
+            pass
     conn.commit()
     cur.close()
     conn.close()
