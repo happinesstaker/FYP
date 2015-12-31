@@ -1,6 +1,6 @@
 #This is the main setting file for this FYP project
 
-QUERY_PAGE = 5
+QUERY_PAGE = 10
 
 DB_CONFIG = {"dbname":"Articles",
              "user":"FYP",

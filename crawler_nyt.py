@@ -16,7 +16,7 @@ def NYT_crawler():
     config = FYPsetting.NYT_CONFIG
     
     for page in range(FYPsetting.QUERY_PAGE//3):
-        url = "%sbegin_data=%s&sort=newest&page=%d&q=%s&api-key=%s" % (API_base_url, config["begin_date"], page, config["API_key"])
+        url = "%sbegin_data=%s&sort=newest&page=%d&q=%s&api-key=%s" % (API_base_url, config["begin_date"], page, config["company"], config["API_key"])
         response = requests.get(url).json()
         raw_response_list += response["response"]["docs"]
     
@@ -25,7 +25,7 @@ def NYT_crawler():
     for doc in raw_response_list:
         url = doc["web_url"]
         title = doc["headline"]["main"]
-        print title
+        #print title
         try:
             cj = cookielib.CookieJar()
             opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))

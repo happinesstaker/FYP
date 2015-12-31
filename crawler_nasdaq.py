@@ -27,7 +27,7 @@ def NASDAQ_crawler():
             continue
         link = tag.get('href', None)
         title = tag.contents[0]
-        print title
+        #print title
         try:
             news_page = urllib2.urlopen(link).read()
             extractor = Extractor(extractor='ArticleExtractor', html=news_page)
