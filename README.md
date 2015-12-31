@@ -18,18 +18,18 @@ UPDATE: Instruction for database
 
 ###Function of modules
 
->Crawler.py execute twitter search
+*All modules are renamed for clarity*
 
->Crawler2.py search NY Times Database
+>crawler_twitter.py execute twitter search and follow external link
 
->Crawler3.py search in NASDAQ
+>crawler_nyt.py search NY Times Database
 
->Crawler4.py use Google news RSS
+>crawler_nasdaq.py search in NASDAQ news
+
+>crawler_google.py use Google news RSS
 
 
 ###UPDATE: Instruction for database
-
-*Note that currently only crawler.py inserts into DB, I'll write a central module for DB insertion and combine all crawlers soon.*
 
 To access DB:
 
@@ -39,10 +39,8 @@ To access DB:
 
 In AWS VM, run
 
-`python crawler.py`
+`python crawling.py`
 in FYP folder
-
-currently 10 twitter results will be added to DB once a time
 
 **DO NOT** modify code in VM for purpose of management, only update locally and push to github, VM will only be used to execute code
 

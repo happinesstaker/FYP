@@ -1,19 +1,22 @@
 __author__ = 'Jiajie YANG'
 
-import requests
-import json
-import urllib2
-import cookielib
 from boilerpipe.extract import Extractor
+import cookielib
+import hashlib
+import json
+import requests
+import urllib2
+
+import FYPsetting
+import DBOperation
 
 def NYT_crawler():
-    COMPANY2 = "cisco"
-    NY_API_KEY = 'dafd1e77c5a943648589c495de8e9d73:6:72720402'
-
     raw_response_list = list()
+	API_base_url = "http://api.nytimes.com/svc/search/v2/articlesearch.json?"
+	config = FYPsetting.NYT_CONFIG
 
-    for page in range(3):
-        url = "http://api.nytimes.com/svc/search/v2/articlesearch.json?begin_data=20100101&sort=newest&page="+str(page)+"&q="+COMPANY2+"&api-key="+NY_API_KEY
+    for page in range(FYPsetting.QUERY_PAGE//3):
+        url = "%sbegin_data=%s&sort=newest&page=%d&q=%s&api-key=%s" % (API_base_url, config["begin_date"], page, config["API_key"])
         response = requests.get(url).json()
         raw_response_list += response["response"]["docs"]
 
@@ -31,10 +34,13 @@ def NYT_crawler():
         except:
             continue
         content = extractor.getText()
-        content_list.append({"title": title, "article": content})
+        content_list.append({"title": title,
+							 "article": content,
+							 "link": url,
+							 "source": "NYT",
+							 "hash": hashlib.sha224(title.encode("UTF-8")).hexdigest()})
 
-    with open(COMPANY2+".NYT.json", "w") as js_file:
-        json.dump(content_list, js_file)
+    DBOperation.save_db(content_list)
 
 if __name__ == '__main__':
     NYT_crawler()
