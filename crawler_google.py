@@ -2,6 +2,7 @@ __author__ = 'Jiajie YANG'
 
 from boilerpipe.extract import Extractor
 import feedparser
+import hashlib
 import json
 import urllib2
 
@@ -23,13 +24,13 @@ def GOOGLE_crawler():
         except:
             continue
         content = extractor.getText()
-        content_list.append({"title": title,
-                            "article": content,
-                            "link": url,
+        content_list.append({"title": title[:290],
+                            "article": content[:2950],
+                            "link": link[:290],
                             "source": "GOOGLE",
                             "hash": hashlib.sha224(title.encode("UTF-8")).hexdigest()})
 
-    DBOperation.db_save(content_list)
+    DBOperation.save_db(content_list)
 
 if __name__ == '__main__':
     GOOGLE_crawler()

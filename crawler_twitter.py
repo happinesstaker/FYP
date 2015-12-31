@@ -37,7 +37,7 @@ def Twitter_crawler():
                 if content is not "":
                     content_list.append({"title": (result["text"].encode("UTF-8"))[:290],
                                         "article": (content.encode("UTF-8"))[:2950],
-                                        "link":utf_word, "source": "TWITTER",
+                                        "link":utf_word[:290], "source": "TWITTER",
                                         "hash": hashlib.sha224(result["text"].encode("UTF-8")).hexdigest()})
                 break
     

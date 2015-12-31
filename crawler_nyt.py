@@ -34,9 +34,9 @@ def NYT_crawler():
         except:
             continue
         content = extractor.getText()
-        content_list.append({"title": title,
-                            "article": content,
-                            "link": url,
+        content_list.append({"title": title[:290],
+                            "article": content[:2950],
+                            "link": url[:290],
                             "source": "NYT",
                             "hash": hashlib.sha224(title.encode("UTF-8")).hexdigest()})
     
