@@ -11,16 +11,16 @@ import DBOperation
 def NASDAQ_crawler():
 
     url = 'http://www.nasdaq.com/symbol/%s/news-headlines' % FYPsetting.NASDAQ_CONFIG["company"]
-
+    
     conn = urllib2.urlopen(url)
     html = conn.read()
-
+    
     soup = BeautifulSoup(html)
     content_div = soup.find("div", {'class': "headlines"})
     links = content_div.findAll('a')
-
+    
     content_list = list()
-
+    
     for tag in links:
         if tag.parent.name == "small":
             continue
@@ -34,11 +34,11 @@ def NASDAQ_crawler():
             continue
         content = extractor.getText()
         content_list.append({"title": title,
-							 "article": content,
-							 "link": url,
-							 "source": "NASDAQ",
-							 "hash": hashlib.sha224(title.encode("UTF-8")).hexdigest()})
-
+                            "article": content,
+                            "link": url,
+                            "source": "NASDAQ",
+                            "hash": hashlib.sha224(title.encode("UTF-8")).hexdigest()})
+    
     DBOperation.db_save(content_list)
 
 if __name__ == '__main__':
