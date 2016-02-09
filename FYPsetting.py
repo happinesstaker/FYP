@@ -2,6 +2,11 @@
 
 QUERY_PAGE = 10
 
+#Length of char are limited in DB
+TITLE_LEN_LIMIT = 299
+LINK_LEN_LIMIT = 299
+CONTENT_LEN_LIMIT = 5999
+
 DB_CONFIG = {"dbname":"Articles",
              "user":"FYP",
              "password":"FYP",

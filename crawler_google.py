@@ -24,9 +24,9 @@ def GOOGLE_crawler():
         except:
             continue
         content = extractor.getText()
-        content_list.append({"title": title[:290],
-                            "article": content[:2950],
-                            "link": link[:290],
+        content_list.append({"title": title[:FYPsetting.TITLE_LEN_LIMIT],
+                            "article": content[:FYPsetting.CONTENT_LEN_LIMIT],
+                            "link": link[:FYPsetting.LINK_LEN_LIMIT],
                             "source": "GOOGLE",
                             "hash": hashlib.sha224(title.encode("UTF-8")).hexdigest()})
 

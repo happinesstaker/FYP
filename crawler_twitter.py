@@ -22,6 +22,14 @@ def Twitter_crawler():
     for result in query["statuses"]:
         #print "@%s %s" % (result["user"]["screen_name"].encode("UTF-8"), result["text"].encode("UTF-8"))
         cur_text = result["text"].split(" ")
+        
+        #pre-process a readable title
+        title_list = result["text"].split(" ")
+        for word in title_list:
+            if word.startswith("http") or word.startswith("#"):
+                title_list.remove(word)
+        final_title = ' '.join(title_list)
+        
         for word in cur_text:
             if word.startswith("http"):
                 utf_word = word.encode("UTF-8")
@@ -35,9 +43,10 @@ def Twitter_crawler():
                     break
                 content = extractor.getText()
                 if content is not "":
-                    content_list.append({"title": (result["text"].encode("UTF-8"))[:290],
-                                        "article": (content.encode("UTF-8"))[:2950],
-                                        "link":utf_word[:290], "source": "TWITTER",
+                    content_list.append({"title": final_title[:FYPsetting.TITLE_LEN_LIMIT],
+                                        "article": (content.encode("UTF-8"))[:FYPsetting.CONTENT_LEN_LIMIT],
+                                        "link":utf_word[:FYPsetting.LINK_LEN_LIMIT],
+                                        "source": "TWITTER",
                                         "hash": hashlib.sha224(result["text"].encode("UTF-8")).hexdigest()})
                 break
     

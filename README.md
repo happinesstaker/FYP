@@ -19,7 +19,7 @@ To access DB:
 
 `enter http://54.201.171.89/phppgadmin/ in browser`
 
-*ALL User&Pass is **FYP***
+*ALL User&Pass is FYP*
 
 To manually crawl data, in AWS VM, run
 `python crawling.py`

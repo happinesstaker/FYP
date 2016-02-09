@@ -11,10 +11,9 @@ if __name__ == "__main__":
     thread_list.append(threading.Thread(target = NASDAQ_crawler))
     thread_list.append(threading.Thread(target = NYT_crawler))
     thread_list.append(threading.Thread(target = Twitter_crawler))
-    
+
     for t in thread_list:
         t.start()
-        
+
     for t in thread_list:
         t.join()
-        
