@@ -1,7 +1,6 @@
-__author__ = 'Jiajie YANG'
-
 from boilerpipe.extract import Extractor
 import cookielib
+import datetime
 import hashlib
 import json
 import requests
@@ -34,10 +33,12 @@ def NYT_crawler():
         except:
             continue
         content = extractor.getText()
+        now = datetime.datetime.now()
         content_list.append({"title": title[:FYPsetting.TITLE_LEN_LIMIT],
                             "article": content[:FYPsetting.CONTENT_LEN_LIMIT],
                             "link": url[:FYPsetting.LINK_LEN_LIMIT],
                             "source": "NYT",
+                            "date": "%04d%02d%02d" % (now.year, now.month, now.day),
                             "hash": hashlib.sha224(title.encode("UTF-8")).hexdigest()})
     
     DBOperation.save_db(content_list)

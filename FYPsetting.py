@@ -26,3 +26,8 @@ NYT_CONFIG = {"API_key":'dafd1e77c5a943648589c495de8e9d73:6:72720402',
 NASDAQ_CONFIG = {"company": "csco"} #cisco
 
 GOOGLE_CONFIG = {"company": "cisco"}
+
+LINKEDIN_CONFIG = {"customer_id":"75uyw84y65lswo",
+                   "customer_secret":"aXurvuFrYEca1oaR",
+                   "oauth_token":"6f84134e-845b-4a82-aaa5-0033c187b410",
+                   "oauth_secret":"5f282dbb-1922-4b6e-85f4-5d493e0bd92a"}

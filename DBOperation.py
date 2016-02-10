@@ -34,7 +34,7 @@ def save_db(content):
     cur.execute("""PREPARE myplan as INSERT INTO article_table VALUES ($1, $2, $3, $4, $5)""")
     for item in content:
         try:
-            cur.execute("""execute myplan (%s, %s, %s, %s, %s)""", (item["hash"], item["title"], item["link"], item["source"], item["article"]))
+            cur.execute("""execute myplan (%s, %s, %s, %s, %s, %s)""", (item["hash"], item["title"], item["link"], item["source"], item["article"], item["date"]))
         except:
             print "\n!Identical Item Inserted!\n"
             pass

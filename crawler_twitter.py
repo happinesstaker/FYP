@@ -2,6 +2,7 @@ __author__ = 'Jiajie YANG'
 
 from boilerpipe.extract import Extractor
 from twitter import *
+import datetime
 import hashlib
 import json
 
@@ -24,12 +25,10 @@ def Twitter_crawler():
         cur_text = result["text"].split(" ")
         
         #pre-process a readable title
-        title_list = result["text"].split(" ")
-        for word in title_list:
-            if word.startswith("http") or word.startswith("#"):
-                title_list.remove(word)
-        final_title = ' '.join(title_list)
-        
+        title_list = [ value for value in result["text"].split(" ") if not value.startswith("http") and not value.startswith("#") and not value.startswith("@") ]
+        final_title = (' '.join(title_list)).encode("UTF-8")
+
+        #parse and extract article
         for word in cur_text:
             if word.startswith("http"):
                 utf_word = word.encode("UTF-8")
@@ -43,10 +42,12 @@ def Twitter_crawler():
                     break
                 content = extractor.getText()
                 if content is not "":
+                    now = datetime.datetime.now()
                     content_list.append({"title": final_title[:FYPsetting.TITLE_LEN_LIMIT],
                                         "article": (content.encode("UTF-8"))[:FYPsetting.CONTENT_LEN_LIMIT],
                                         "link":utf_word[:FYPsetting.LINK_LEN_LIMIT],
                                         "source": "TWITTER",
+                                        "date": "%04d%02d%02d" % (now.year, now.month, now.day),
                                         "hash": hashlib.sha224(result["text"].encode("UTF-8")).hexdigest()})
                 break
     

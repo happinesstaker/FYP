@@ -35,3 +35,10 @@ in FYP folder
 All modules are well organized and tested already, you can get data with them
 
 **Auto Run:** Add crawling.py to linux scheduler to let it run each hour or so
+
+---
+#### UPDATE: Crawler Data Modification (2.9)
+
+Pre-process Title from Twitter to let it be more readabale
+
+Add Attribute: Data Collection Time
