@@ -3,9 +3,9 @@
 QUERY_PAGE = 10
 
 #Length of char are limited in DB
-TITLE_LEN_LIMIT = 299
-LINK_LEN_LIMIT = 299
-CONTENT_LEN_LIMIT = 5999
+TITLE_LEN_LIMIT = 290
+LINK_LEN_LIMIT = 290
+CONTENT_LEN_LIMIT = 5900
 
 DB_CONFIG = {"dbname":"Articles",
              "user":"FYP",
@@ -16,16 +16,10 @@ DB_CONFIG = {"dbname":"Articles",
 TWITTER_CONFIG = {"access_key": "3780616332-PArbYD6xifva5Zo9oTUqg6yJlPwYa9WdR53Tdlk",
                   "access_secret": "ccXRQorrexkTS3xpRYHJobT11eGA3i4MB6Bj7WezRvevO",
                   "consumer_key": "RctxsgdWyhHpfNDIeUPAxKJ5f",
-                  "consumer_secret": "Lx4GAVULXCsFlHE50sw3m8Ca6w6IDK5hLkBCSCL7HSVtyQiJh2",
-                  "company":"cisco"}
+                  "consumer_secret": "Lx4GAVULXCsFlHE50sw3m8Ca6w6IDK5hLkBCSCL7HSVtyQiJh2"}
                   
 NYT_CONFIG = {"API_key":'dafd1e77c5a943648589c495de8e9d73:6:72720402',
-              "begin_date":"20100101",
-              "company":"cisco"}
-              
-NASDAQ_CONFIG = {"company": "csco"} #cisco
-
-GOOGLE_CONFIG = {"company": "cisco"}
+              "begin_date":"20100101"}
 
 LINKEDIN_CONFIG = {"customer_id":"75uyw84y65lswo",
                    "customer_secret":"aXurvuFrYEca1oaR",

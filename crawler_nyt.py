@@ -9,13 +9,22 @@ import urllib2
 import FYPsetting
 import DBOperation
 
+
 def NYT_crawler():
+    companies = dict()
+    with open("target_companies.json","r") as infile:
+        companies = json.load(infile)
+    for company in companies["all_companies"]:
+        NYT_get_data(company)
+
+
+def NTY_get_data(company)
     raw_response_list = list()
     API_base_url = "http://api.nytimes.com/svc/search/v2/articlesearch.json?"
     config = FYPsetting.NYT_CONFIG
     
     for page in range(FYPsetting.QUERY_PAGE//3):
-        url = "%sbegin_data=%s&sort=newest&page=%d&q=%s&api-key=%s" % (API_base_url, config["begin_date"], page, config["company"], config["API_key"])
+        url = "%sbegin_data=%s&sort=newest&page=%d&q=%s&api-key=%s" % (API_base_url, config["begin_date"], page, company, config["API_key"])
         response = requests.get(url).json()
         raw_response_list += response["response"]["docs"]
     

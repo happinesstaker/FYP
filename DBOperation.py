@@ -31,7 +31,7 @@ def save_db(content):
         exit(-1)
 
     cur = conn.cursor()
-    cur.execute("""PREPARE myplan as INSERT INTO article_table VALUES ($1, $2, $3, $4, $5)""")
+    cur.execute("""PREPARE myplan as INSERT INTO article_table VALUES ($1, $2, $3, $4, $5, $6)""")
     for item in content:
         try:
             cur.execute("""execute myplan (%s, %s, %s, %s, %s, %s)""", (item["hash"], item["title"], item["link"], item["source"], item["article"], item["date"]))

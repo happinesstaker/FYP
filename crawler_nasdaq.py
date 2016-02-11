@@ -5,12 +5,19 @@ import hashlib
 import json
 import urllib2
 
-import FYPsetting
 import DBOperation
 
-def NASDAQ_crawler():
 
-    url = 'http://www.nasdaq.com/symbol/%s/news-headlines' % FYPsetting.NASDAQ_CONFIG["company"]
+def NASDAQ_crawler():
+    companies = dict()
+    with open("target_companies.json","r") as infile:
+        companies = json.load(infile)
+    for company in companies["company_code"]:
+        NASDAQ_get_data(company)
+
+def NASDAQ_get_data(company_code):
+
+    url = 'http://www.nasdaq.com/symbol/%s/news-headlines' % company_code
     
     conn = urllib2.urlopen(url)
     html = conn.read()

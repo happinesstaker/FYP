@@ -42,3 +42,12 @@ All modules are well organized and tested already, you can get data with them
 Pre-process Title from Twitter to let it be more readabale
 
 Add Attribute: Data Collection Time
+
+---
+#### UPDATE: Related Company List Feature Added (2.11)
+
+*Run related_company to update the list of related companies, which is saved in target_companies.json*
+
+Query LinkedIn API for related companies like subsidiary or holding company
+
+Rewrite crawler to support multi-company crawling

@@ -9,8 +9,16 @@ import json
 import FYPsetting
 import DBOperation
 
+
 def Twitter_crawler():
-    company = FYPsetting.TWITTER_CONFIG["company"]
+    companies = dict()
+    with open("target_companies.json","r") as infile:
+        companies = json.load(infile)
+    for company in companies["all_companies"]:
+        Twitter_get_data(company)
+
+def Twitter_get_data(company):
+
     config = FYPsetting.TWITTER_CONFIG
     
     twitter = Twitter(auth=OAuth(config["access_key"], config["access_secret"],
