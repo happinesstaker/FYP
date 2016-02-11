@@ -5,6 +5,7 @@ import psycopg2
 import os
 import FYPsetting
 
+
 def save_local(content, source, company):
     '''
     This function saves content crawled as local json copy
@@ -23,7 +24,7 @@ def save_db(content):
     This function will save raw content to postgresql DB
     '''
     db_setting = FYPsetting.DB_CONFIG
-    
+
     try:
         conn = psycopg2.connect("dbname='%s' user='%s' password='%s' host='%s' port='%s'" % (db_setting["dbname"], db_setting["user"], db_setting["password"], db_setting["host"], db_setting["port"]))
     except:
@@ -32,13 +33,17 @@ def save_db(content):
 
     cur = conn.cursor()
     cur.execute("""PREPARE myplan as INSERT INTO article_table VALUES ($1, $2, $3, $4, $5, $6)""")
+
     for item in content:
         try:
+            
             cur.execute("""execute myplan (%s, %s, %s, %s, %s, %s)""", (item["hash"], item["title"], item["link"], item["source"], item["article"], item["date"]))
-        except:
-            print "\n!Identical Item Inserted!\n"
-            pass
-    conn.commit()
+        except psycopg2.IntegrityError as err:
+            conn.rollback()
+            continue
+        else:
+            conn.commit()
+
+        
     cur.close()
-    
     conn.close()

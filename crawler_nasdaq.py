@@ -6,6 +6,7 @@ import json
 import urllib2
 
 import DBOperation
+import FYPsetting
 
 
 def NASDAQ_crawler():
@@ -41,8 +42,8 @@ def NASDAQ_get_data(company_code):
             continue
         content = extractor.getText()
         now = datetime.datetime.now()
-        content_list.append({"title": title[:FYPsetting.TITLE_LEN_LIMIT],
-                            "article": content[:FYPsetting.CONTENT_LEN_LIMIT],
+        content_list.append({"title": (title.encode('latin-1', 'replace'))[:FYPsetting.TITLE_LEN_LIMIT],
+                            "article": (content.encode('latin-1', 'replace'))[:FYPsetting.CONTENT_LEN_LIMIT],
                             "link": link[:FYPsetting.LINK_LEN_LIMIT],
                             "source": "NASDAQ",
                             "date": "%04d%02d%02d" % (now.year, now.month, now.day),

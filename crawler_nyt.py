@@ -18,7 +18,7 @@ def NYT_crawler():
         NYT_get_data(company)
 
 
-def NTY_get_data(company)
+def NYT_get_data(company):
     raw_response_list = list()
     API_base_url = "http://api.nytimes.com/svc/search/v2/articlesearch.json?"
     config = FYPsetting.NYT_CONFIG
@@ -43,8 +43,8 @@ def NTY_get_data(company)
             continue
         content = extractor.getText()
         now = datetime.datetime.now()
-        content_list.append({"title": title[:FYPsetting.TITLE_LEN_LIMIT],
-                            "article": content[:FYPsetting.CONTENT_LEN_LIMIT],
+        content_list.append({"title": (title.encode('latin-1', 'replace'))[:FYPsetting.TITLE_LEN_LIMIT],
+                            "article": (content.encode('latin-1', 'replace'))[:FYPsetting.CONTENT_LEN_LIMIT],
                             "link": url[:FYPsetting.LINK_LEN_LIMIT],
                             "source": "NYT",
                             "date": "%04d%02d%02d" % (now.year, now.month, now.day),

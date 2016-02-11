@@ -6,6 +6,7 @@ import json
 import urllib2
 
 import DBOperation
+import FYPsetting
 
 
 def GOOGLE_crawler():
@@ -33,8 +34,8 @@ def GOOGLE_get_data(company):
             continue
         content = extractor.getText()
         now = datetime.datetime.now()
-        content_list.append({"title": title[:FYPsetting.TITLE_LEN_LIMIT].encode("UTF-8"),
-                            "article": content[:FYPsetting.CONTENT_LEN_LIMIT].encode("UTF-8"),
+        content_list.append({"title": (title.encode('latin-1', 'replace'))[:FYPsetting.TITLE_LEN_LIMIT],
+                            "article": (content.encode('latin-1', 'replace'))[:FYPsetting.CONTENT_LEN_LIMIT],
                             "link": link[:FYPsetting.LINK_LEN_LIMIT],
                             "source": "GOOGLE",
                             "date": "%04d%02d%02d" % (now.year, now.month, now.day),
