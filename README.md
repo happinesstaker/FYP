@@ -51,3 +51,12 @@ Add Attribute: Data Collection Time
 Query LinkedIn API for related companies like subsidiary or holding company
 
 Rewrite crawler to support multi-company crawling
+
+---
+#### UPDATE: UMBC Comparasion Added (2.13)
+
+Query titles from database for *w* days from today to compare, return a list of candidates
+
+*LSA is currently omitted*
+
+*The specific ruls for path distance weighing is also omitted*
