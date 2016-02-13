@@ -1,4 +1,4 @@
-__author__ = 'Jiajie YANG'
+__author__ = 'Jiajie YANG, Sirui XIE'
 
 import json
 import psycopg2
@@ -47,3 +47,33 @@ def save_db(content):
         
     cur.close()
     conn.close()
+
+def query_db(date):
+    '''
+    This function queries raw content from postgresql DB
+    with date in the format of "%04d%02d%02d"
+    '''
+    db_setting = FYPsetting.DB_CONFIG
+    title_list = []
+
+    try:
+        conn = psycopg2.connect("dbname='%s' user='%s' password='%s' host='%s' port='%s'" % (db_setting["dbname"], db_setting["user"], db_setting["password"], db_setting["host"], db_setting["port"]))
+    except:
+        print "Cannot Connect Database!"
+        exit(-1)
+
+    cur = conn.cursor()
+    # try to handle the null exception
+    try:
+        cur.execute("""SELECT title FROM article_table WHERE date = (%s);""", date)
+    except:
+        print "Notice! There is no article in %s", date
+
+    title_list.extend(cur.fetchall())
+
+    cur.close()
+    conn.close()
+
+    return title_list
+
+

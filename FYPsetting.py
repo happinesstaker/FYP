@@ -6,6 +6,13 @@ QUERY_PAGE = 10
 TITLE_LEN_LIMIT = 290
 LINK_LEN_LIMIT = 290
 CONTENT_LEN_LIMIT = 5900
+COMPARING_DATES = 5
+SIMI_THRESHOLD = 2
+WORDNET_FORMAT = {"NN":'n',
+                  "VB":'v',
+                  "JJ":'a',
+                  "RB": 'r'
+                  }
 
 DB_CONFIG = {"dbname":"Articles",
              "user":"FYP",
@@ -25,3 +32,4 @@ LINKEDIN_CONFIG = {"customer_id":"75uyw84y65lswo",
                    "customer_secret":"aXurvuFrYEca1oaR",
                    "oauth_token":"6f84134e-845b-4a82-aaa5-0033c187b410",
                    "oauth_secret":"5f282dbb-1922-4b6e-85f4-5d493e0bd92a"}
+
