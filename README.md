@@ -59,4 +59,4 @@ Query titles from database for *w* days from today to compare, return a list of 
 
 *LSA is currently omitted*
 
-*The specific ruls for path distance weighing is also omitted*
+*The specific rules for path distance weighing is also omitted*
