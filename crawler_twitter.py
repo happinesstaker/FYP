@@ -34,12 +34,12 @@ def Twitter_get_data(company):
         
         #pre-process a readable title
         title_list = [ value for value in result["text"].split(" ") if not value.startswith("http") and not value.startswith("#") and not value.startswith("@") ]
-        final_title = (' '.join(title_list)).encode('latin-1', 'replace')
+        final_title = (' '.join(title_list)).encode('latin-1', 'ignore')
 
         #parse and extract article
         for word in cur_text:
             if word.startswith("http"):
-                utf_word = word.encode('latin-1', 'replace')
+                utf_word = word.encode('latin-1', 'ignore')
                 if utf_word in urllist:
                     break
                 urllist.append(utf_word)
@@ -52,7 +52,7 @@ def Twitter_get_data(company):
                 if content is not "":
                     now = datetime.datetime.now()
                     content_list.append({"title": final_title[:FYPsetting.TITLE_LEN_LIMIT],
-                                        "article": (content.encode('latin-1', 'replace'))[:FYPsetting.CONTENT_LEN_LIMIT],
+                                        "article": (content.encode('latin-1', 'ignore'))[:FYPsetting.CONTENT_LEN_LIMIT],
                                         "link":utf_word[:FYPsetting.LINK_LEN_LIMIT],
                                         "source": "TWITTER",
                                         "date": "%04d%02d%02d" % (now.year, now.month, now.day),
