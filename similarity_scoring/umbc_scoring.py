@@ -5,10 +5,10 @@ import numpy as np
 import nltk
 import DBOperation
 import FYPsetting
-
-__author__ = "Sirui XIE"
+from lsa_matrix import LSAMatrix
 
 titles_dict = {}
+LSA_Matrix = LSAMatrix()
 
 def sim (word1, pos1, word2, pos2):
     '''
@@ -21,6 +21,7 @@ def sim (word1, pos1, word2, pos2):
     :param pos2:
     :return: a the similarity score
     '''
+
     if wn.synsets(word1, pos1) & wn.synsets(word2, pos2):
         # take the case where a word has multiple synsets into account
         # as said in the umbc paper, choose the largest value
@@ -33,9 +34,9 @@ def sim (word1, pos1, word2, pos2):
                 s2 = wn.synsets(word2, pos2)[y]
                 sim_mat[y][x]=s1.shortest_path_distance(s2)
         distance = sim_mat.max()
-        return exp(-0.25*distance)
+        return exp(-0.25*distance)+LSA_Matrix.similarity(word1, word2)
     else:
-        return 0
+        return LSA_Matrix.similarity(word1, word2)
 
 def inverse_log_fq(token, sent):
     '''
@@ -118,14 +119,14 @@ def umbc_sim (title1, title2):
     for x in range(len(tokens1)):
         token1=tokens1[x]
         pos1 = tagged1(x)[1]
-        simi = 0;
+        simi = 0
         counterpart1 = ''
         for y in range(len(tokens2)):
             token2 = tokens2[y]
             pos2 = tagged2(y)[1]
             Matrix[y][x] = sim(token1, pos1, token2, pos2)
-            if sim(token1, token2)>simi:
-                simi = sim(token1, pos1, token2, pos2)
+            if Matrix[y][x]>simi:
+                simi = Matrix[y][x]
                 counterpart1 = token2
         penalty1 = umbc_penalty(token1, pos1, tokens1, simi, counterpart1)
         result1[token1] = {'sim':simi, 'p':penalty1}
@@ -152,13 +153,18 @@ def umbc_sim (title1, title2):
 def ini():
     '''
     initialize dates to be compared and query from database
+    initialize LSA_Matrix
     :return:
     '''
+    global LSA_Matrix
+    global titles_dict
     for i in range (0, FYPsetting.COMPARING_DATES):
         day = date.today() - timedelta(i)
         day_digi = "%04d%02d%02d" % (day.year, day.month, day.day)
-        titles = DBOperation.query_db(day_digi)
-        titles_dict [i] = titles
+        titles = DBOperation.query_title(day_digi)
+        titles_dict.append(titles)
+
+    LSA_Matrix = LSAMatrix(DBOperation.query_lsa())
 
 def title_cmp():
     '''
