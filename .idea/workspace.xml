@@ -2,23 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="cf7d4e6b-58f6-4d9e-84d3-3eaefcf66eae" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/semantic/__init__.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/semantic/english.stop" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/semantic/matrix_formatter.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/semantic/parser.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/semantic/porter_stemmer.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/semantic/transform/__init__.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/semantic/transform/lsa.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/semantic/transform/tfidf.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/semantic/transform/transform.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/semantic/vector_space.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/similarity_scoring/__init__.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/similarity_scoring/lsa_matrix.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/similarity_scoring/tfidf_scoring.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/umbc_scoring.py" afterPath="$PROJECT_DIR$/similarity_scoring/umbc_scoring.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DBOperation.py" afterPath="$PROJECT_DIR$/DBOperation.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/FYPsetting.py" afterPath="$PROJECT_DIR$/FYPsetting.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
     </list>
     <ignored path="FYP.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -64,10 +48,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="umbc_scoring.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="umbc_scoring.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/similarity_scoring/umbc_scoring.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.45517242">
+            <state vertical-scroll-proportion="0.0">
               <caret line="34" column="59" selection-start-line="34" selection-start-column="59" selection-end-line="34" selection-end-column="59" />
               <folding>
                 <element signature="e#0#36#0" expanded="true" />
@@ -88,6 +72,16 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="README.md" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/README.md">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.95702004">
+              <caret line="70" column="0" selection-start-line="70" selection-start-column="0" selection-end-line="70" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="vector_space.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/semantic/vector_space.py">
           <provider selected="true" editor-type-id="text-editor">
@@ -95,40 +89,6 @@
               <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="10" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="parser.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/semantic/parser.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="7" column="18" selection-start-line="7" selection-start-column="18" selection-end-line="7" selection-end-column="18" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="lsa.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/semantic/transform/lsa.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="16" column="34" selection-start-line="16" selection-start-column="34" selection-end-line="16" selection-end-column="34" />
-              <folding>
-                <element signature="e#0#28#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="transform.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/semantic/transform/transform.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="9" column="49" selection-start-line="9" selection-start-column="49" selection-end-line="9" selection-end-column="49" />
-              <folding>
-                <element signature="e#1#54#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -150,7 +110,6 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/pos_testing.py" />
-        <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/semantics/parser.py" />
         <option value="$PROJECT_DIR$/semantics/porter_stemmer.py" />
         <option value="$PROJECT_DIR$/semantics/matrix_formatter.py" />
@@ -173,6 +132,7 @@
         <option value="$PROJECT_DIR$/similarity_scoring/lsa_matrix.py" />
         <option value="$PROJECT_DIR$/DBOperation.py" />
         <option value="$PROJECT_DIR$/similarity_scoring/umbc_scoring.py" />
+        <option value="$PROJECT_DIR$/README.md" />
       </list>
     </option>
   </component>
@@ -738,14 +698,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-21.962963">
-          <caret line="61" column="18" selection-start-line="61" selection-start-column="18" selection-end-line="61" selection-end-column="18" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/similarity_scoring/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -766,14 +718,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="11" column="15" selection-start-line="11" selection-start-column="15" selection-end-line="11" selection-end-column="15" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/semantic/parser.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="7" column="18" selection-start-line="7" selection-start-column="18" selection-end-line="7" selection-end-column="18" />
           <folding />
         </state>
       </provider>
@@ -802,26 +746,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/semantic/transform/transform.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="9" column="49" selection-start-line="9" selection-start-column="49" selection-end-line="9" selection-end-column="49" />
-          <folding>
-            <element signature="e#1#54#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/semantic/transform/lsa.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="16" column="34" selection-start-line="16" selection-start-column="34" selection-end-line="16" selection-end-column="34" />
-          <folding>
-            <element signature="e#0#28#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/DBOperation.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -830,16 +754,6 @@
             <marker date="1459081906000" expanded="true" signature="2035:2084" placeholder="SELECT title... article_table" />
             <marker date="1459081906000" expanded="true" signature="2838:2870" placeholder="SELECT conte... corpus_table" />
             <marker date="1459081906000" expanded="true" signature="3589:3620" placeholder="SELECT matri... corpus_table" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/semantic/vector_space.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="10" />
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -856,11 +770,57 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/similarity_scoring/umbc_scoring.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.45517242">
+        <state vertical-scroll-proportion="0.0">
           <caret line="34" column="59" selection-start-line="34" selection-start-column="59" selection-end-line="34" selection-end-column="59" />
           <folding>
             <element signature="e#0#36#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/semantic/transform/transform.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.18620689">
+          <caret line="9" column="49" selection-start-line="9" selection-start-column="49" selection-end-line="9" selection-end-column="49" />
+          <folding>
+            <element signature="e#1#54#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/semantic/transform/lsa.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.33103448">
+          <caret line="16" column="34" selection-start-line="16" selection-start-column="34" selection-end-line="16" selection-end-column="34" />
+          <folding>
+            <element signature="e#0#28#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/semantic/parser.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.089655176">
+          <caret line="7" column="18" selection-start-line="7" selection-start-column="18" selection-end-line="7" selection-end-column="18" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/semantic/vector_space.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="10" />
+          <folding>
+            <element signature="e#0#10#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.95702004">
+          <caret line="70" column="0" selection-start-line="70" selection-start-column="0" selection-end-line="70" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>

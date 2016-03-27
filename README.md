@@ -60,3 +60,12 @@ Query titles from database for *w* days from today to compare, return a list of 
 *LSA is currently omitted*
 
 *The specific rules for path distance weighing is also omitted*
+
+---
+#### UPDARTE: UMBC with LSA finished (3.27)
+
+LSA is implemented as stated in the paper, WINDOW_SIZE is set to 4, DIMENSION for SVD is set to 300
+
+*Need to design corpus_table to store corpus documents and the precalculated lsa matrix*
+
+
