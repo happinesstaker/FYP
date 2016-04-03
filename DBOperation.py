@@ -68,6 +68,7 @@ def save_db(content):
         print "Cannot Connect Database!"
         exit(-1)
 
+    conn.set_client_encoding('LATIN1')
     cur = conn.cursor()
     cur.execute("""PREPARE myplan as INSERT INTO article_table VALUES ($1, $2, $3, $4, $5, $6, $7)""")
 
