@@ -32,12 +32,12 @@ def save_db(content):
         exit(-1)
 
     cur = conn.cursor()
-    cur.execute("""PREPARE myplan as INSERT INTO article_table VALUES ($1, $2, $3, $4, $5, $6)""")
+    cur.execute("""PREPARE myplan as INSERT INTO article_table VALUES ($1, $2, $3, $4, $5, $6, $7)""")
 
     for item in content:
         try:
             
-            cur.execute("""execute myplan (%s, %s, %s, %s, %s, %s)""", (item["hash"], item["title"], item["link"], item["source"], item["article"], item["date"]))
+            cur.execute("""execute myplan (%s, %s, %s, %s, %s, %s, %s)""", (item["hash"], (item["title"].encode('latin-1', 'ignore'))[:FYPsetting.TITLE_LEN_LIMIT], item["link"][:FYPsetting.LINK_LEN_LIMIT], item["source"], (item["article"].encode('latin-1', 'ignore'))[:FYPsetting.CONTENT_LEN_LIMIT], item["date"], item["target"][:FYPsetting.TARGET_LEN_LIMIT]))
         except psycopg2.IntegrityError as err:
             conn.rollback()
             continue
