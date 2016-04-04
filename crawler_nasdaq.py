@@ -24,17 +24,21 @@ def NASDAQ_get_data(company_code):
     html = conn.read()
     
     soup = BeautifulSoup(html)
-    content_div = soup.find("div", {'class': "headlines"})
+    content_div = soup.find("div", {'class': "news-headlines"})
+    
+    # No news found?
+    if content_div==None:
+        return
+        
     links = content_div.findAll('a')
     
     content_list = list()
     
     for tag in links:
-        if tag.parent.name == "small":
+        if tag.parent.name != "span":
             continue
         link = tag.get('href', None)
         title = tag.contents[0]
-        #print title
         try:
             news_page = urllib2.urlopen(link).read()
             extractor = Extractor(extractor='ArticleExtractor', html=news_page)
