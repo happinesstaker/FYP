@@ -6,8 +6,7 @@ from semantic.transform.tfidf import TFIDF
 from semantic.parser import Parser
 
 try:
-	from numpy import dot
-	from numpy.linalg import norm
+	import numpy
 except:
 	print "Error: Requires numpy from http://www.scipy.org/. Have you installed scipy?"
 	sys.exit()
@@ -20,7 +19,8 @@ class VectorSpace:
 
 	collection_of_document_term_vectors = []
 	vector_index_to_keyword_mapping = []
-	collection_of_document_term_lists = []
+	#collection_of_document_term_dicts = []
+	word_index_list_of_docs = []
 
 	parser = None
 
@@ -56,8 +56,10 @@ class VectorSpace:
 		matrix = reduce(lambda matrix,transform: transform(matrix).transform(), transforms, matrix)
 		self.collection_of_document_term_vectors = matrix
 
-		matrix2 = [self._make_list(document) for document in documents]
-		self.collection_of_document_term_lists = matrix2
+		# comment out for the modification
+		#matrix2 = [self._make_dict(document) for document in documents]
+		#matrix2 = [self._make_dict(word_list) for word_list in self.word_list_of_docs]
+		#self.collection_of_document_term_dicts = matrix2
 
 
 	def _get_vector_keyword_index(self, document_list):
@@ -80,25 +82,63 @@ class VectorSpace:
 
 		word_list = self.parser.tokenise_and_remove_stop_words(word_string.split(" "))
 
+		index_list = []
 		for word in word_list:
-			vector[self.vector_index_to_keyword_mapping[word]] += 1; #Use simple Term Count Model
+			vector[self.vector_index_to_keyword_mapping[word]] += 1 #Use simple Term Count Model
+			index_list.append(self.vector_index_to_keyword_mapping[word])
+		self.word_index_list_of_docs.append(index_list)
 		return vector
 
+	'''
 	def _make_list(self, word_string):
 		""" make an array of list of the index of each term in each document"""
-		vector = [[-1]] * len(self.vector_index_to_keyword_mapping)
+		vector = [[]] * len(self.vector_index_to_keyword_mapping)
+		print 'vector', vector
 
 		word_list = self.parser.tokenise_and_remove_stop_words(word_string.split(" "))
 
 		counter = 0
 		for word in word_list:
-			if vector[self.vector_index_to_keyword_mapping[word]] == -1:
-				vector[self.vector_index_to_keyword_mapping[word]][0] = counter
+			i = self.vector_index_to_keyword_mapping[word]
+			if vector[3] == []:
+				print word, 'has index', 3
+				(vector[3]).append(counter)
+				print vector[3]
+				print 'vector', vector
+				exit(0)
 			else:
-				vector[self.vector_index_to_keyword_mapping[word]].append(counter)
+				print word, 'has index', self.vector_index_to_keyword_mapping[word]
+				list = vector[i]
+				print list
+				list.append(counter)
+				print vector[i]
+				print 'vector', vector
 			counter += 1
+		print vector
 		return vector
+	'''
 
+	# As _make_vector has been modified and the word_list for each doc is stored,
+	# there is no need to rebuild these lists again.
+	'''
+	def _make_dict(self, word_string):
+		""" make an array of list of the index of each term in each document"""
+		dict = {}
+		#print 'dict', dict
+
+		word_list = self.parser.tokenise_and_remove_stop_words(word_string.split(" "))
+
+		counter = 0
+		for word in word_list:
+			i = self.vector_index_to_keyword_mapping[word]
+			if not dict.has_key(word):
+				dict[word] = [counter]
+
+			else:
+				dict[word].append(counter)
+			counter += 1
+		return dict
+	'''
 
 	def _build_query_vector(self, term_list):
 		""" convert query string into a term vector """
@@ -114,4 +154,4 @@ class VectorSpace:
 	def _cosine(self, vector1, vector2):
 		""" related documents j and q are in the concept space by comparing the vectors :
 			cosine  = ( V1 * V2 ) / ||V1|| x ||V2|| """
-		return float(dot(vector1,vector2) / (norm(vector1) * norm(vector2)))
+		return float(numpy.dot(vector1,vector2) / (numpy.norm(vector1) * numpy.norm(vector2)))
