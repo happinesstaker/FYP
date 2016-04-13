@@ -1,9 +1,6 @@
 import sys
-
-from semantic.transform.lsa import LSA
-from semantic.transform.tfidf import TFIDF
-
 from semantic.parser import Parser
+import re
 
 try:
 	import numpy
@@ -16,47 +13,34 @@ class VectorSpace:
     A document is represented as a vector. Each dimension of the vector corresponds to a
     separate term. If a term occurs in the document, then the value in the vector is non-zero.
     """
+	vector_index_to_keyword_mapping = {}
 
-	collection_of_document_term_vectors = []
-	vector_index_to_keyword_mapping = []
-	#collection_of_document_term_dicts = []
-	word_index_list_of_docs = []
 
 	parser = None
 
-	def __init__(self, documents = [], transforms = [TFIDF, LSA]):
-		self.collection_of_document_term_vectors = []
+	def __init__(self, documents = [], transforms = []):
 		self.parser = Parser()
+		#self._doc_preprocess(documents)
 		if len(documents) > 0:
 				self._build(documents, transforms)
 
-
-
-	def related(self, document_id):
-		""" find documents that are related to the document indexed by passed Id within the document Vectors"""
-		ratings = [self._cosine(self.collection_of_document_term_vectors[document_id], document_vector) for document_vector in self.collection_of_document_term_vectors]
-		ratings.sort(reverse = True)
-		return ratings
-
-
-	def search(self, searchList):
-		""" search for documents that match based on a list of terms """
-		queryVector = self._build_query_vector(searchList)
-
-		ratings = [self._cosine(queryVector, documentVector) for documentVector in self.collection_of_document_term_vectors]
-		ratings.sort(reverse=True)
-		return ratings
+	def _doc_preprocess(self, docs):
+		print "previous", len(docs)
+		docs = map(self.parser._clean, docs)
+		docs = filter(lambda x: x == '' or ' ', docs)
+		print "now", len(docs)
 
 
 	def _build(self, documents, transforms):
 		""" Create the vector space for the passed document strings without duplicate words"""
 		self.vector_index_to_keyword_mapping = self._get_vector_keyword_index(documents)
 
-		matrix = [self._make_vector(document) for document in documents]
-		matrix = reduce(lambda matrix,transform: transform(matrix).transform(), transforms, matrix)
-		self.collection_of_document_term_vectors = matrix
+		# comment out for the class splitting, moved downward to vs_tf
+		#matrix = [self._make_vector(document) for document in documents]
+		#matrix = reduce(lambda matrix,transform: transform(matrix).transform(), transforms, matrix)
+		#self.collection_of_document_term_vectors = matrix
 
-		# comment out for the modification
+		# comment out for the algorithm modification
 		#matrix2 = [self._make_dict(document) for document in documents]
 		#matrix2 = [self._make_dict(word_list) for word_list in self.word_list_of_docs]
 		#self.collection_of_document_term_dicts = matrix2
@@ -75,6 +59,8 @@ class VectorSpace:
 		return vector_index  #(keyword:position)
 
 
+	# comment out for the class splitting
+	'''
 	def _make_vector(self, word_string):
 		""" @pre: unique(vectorIndex) """
 
@@ -85,10 +71,10 @@ class VectorSpace:
 		index_list = []
 		for word in word_list:
 			vector[self.vector_index_to_keyword_mapping[word]] += 1 #Use simple Term Count Model
-			index_list.append(self.vector_index_to_keyword_mapping[word])
-		self.word_index_list_of_docs.append(index_list)
+			#index_list.append(self.vector_index_to_keyword_mapping[word])
+		#self.word_index_list_of_docs.append(index_list)
 		return vector
-
+	'''
 	'''
 	def _make_list(self, word_string):
 		""" make an array of list of the index of each term in each document"""
@@ -139,11 +125,6 @@ class VectorSpace:
 			counter += 1
 		return dict
 	'''
-
-	def _build_query_vector(self, term_list):
-		""" convert query string into a term vector """
-		query = self._make_vector(" ".join(term_list))
-		return query
 
 
 	def _remove_duplicates(self, list):

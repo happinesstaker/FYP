@@ -7,10 +7,10 @@ class VS_Co(vector_space.VectorSpace):
     word_index_list_of_docs = []
 
     def __init__(self, documents = [], transforms = [LSA]):
-        print "Initializing base class..."
+        print datetime.now(), " Initializing base class..."
         start_time = datetime.now()
         vector_space.VectorSpace.__init__(self, documents, transforms)
-        print "Base class initialized"
+        print datetime.now(), " Base class initialized"
         print datetime.now() - start_time
         self._make_word_index_list(documents)
 

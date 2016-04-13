@@ -1,6 +1,7 @@
 import sys
 import os
 import cPickle as pickle
+import scipy.sparse as sp
 
 from semantic.vector_space.vs_co import VS_Co
 from math import exp, log
@@ -26,7 +27,7 @@ class LSAMatrix:
     TERM_DOC_FILE_BIN = '%s/term_doc.bin' %  DATA_PATH
     TERM_DOC_FILE = '%s/term_doc.txt' %  DATA_PATH
     WORD_LIST_FILE = '%s/word_list.txt' %  DATA_PATH
-    lsa_matrix = []
+    lsa_matrix = sp.csc_matrix
     keyword_index_mapping = []
 
     def __init__(self, matrix, mapping):
@@ -35,7 +36,7 @@ class LSAMatrix:
 
     def update(self):
         try:
-            print "Loading stored matrices..."
+            print datetime.now(), " Try loading stored matrices..."
             raise OSError
             #start_time = datetime.now()
             f = open(LSAMatrix.LSA_MATRIX_FILE, 'rb')
@@ -44,21 +45,22 @@ class LSAMatrix:
             f.close()
             print datetime.now()-start_time
         except:
-            print "Matrix does not exist, creating now..."
+            print datetime.now(), " Matrix does not exist, creating now..."
             o_time = datetime.now()
             lsa_corpus_io_stream = open(LSAMatrix.LSA_CORPUS_FILE, 'r')
             docs = lsa_corpus_io_stream.read().split("+++---+++")
             for doc in docs:
                 doc = doc.replace("\n", " ")
-            print ("There are %d docs"% len(docs))
+            print datetime.now(), (" There are %d docs"% len(docs))
             #print docs[74]
             #exit(0)
             start_time = datetime.now()
             #print "Building occurrence_matrix..."
             start_time = datetime.now()
-            print "Creating Vector Space..."
-            vs = VS_Co(docs, transforms = [])
-            print "Vector Space created"
+            print datetime.now(), " Creating Vector Space..."
+            vs = VS_Co(docs[:20001], transforms = [])
+            #del docs
+            print datetime.now(), " Vector Space created"
             print datetime.now() - start_time
             '''
             print "Occurrence_matrix built."
@@ -82,7 +84,7 @@ class LSAMatrix:
             '''
 
             start_time = datetime.now()
-            print "Building co-occurrence_matrix..."
+            print datetime.now(), " Building co-occurrence_matrix..."
 
             self.keyword_index_mapping = vs.vector_index_to_keyword_mapping
             print datetime.now(), "   Saved keyword index map. "
@@ -115,9 +117,9 @@ class LSAMatrix:
                                             break
             '''
 
-            for doc_index in range(len(docs)):
+            for doc_index in range(20001):#range(len(docs)):
                 if doc_index%10000 == 0:
-                    print datetime.now(), "doc", doc_index
+                    print datetime.now(), " doc", doc_index
                 word_index_list = vs.word_index_list_of_docs[doc_index]
                 #print word_index_list
                 length = len(word_index_list)
@@ -133,27 +135,42 @@ class LSAMatrix:
                         self.__update_cooccurrence_mat__(cooccurence_matrix, word_index_list[i+2],word_index_list[i+3])
 
 
-            print "Co-occurrence_matrix built."
+            print datetime.now(), " Co-occurrence_matrix built.", len(cooccurence_matrix), len(cooccurence_matrix)
             print datetime.now()-start_time
             #print cooccurence_matrix[0]
 
+            print datetime.now(), " Converting co-occurrence_matrix to float point sparse matrix..."
             start_time = datetime.now()
-            print "Normalizing co-occurrence_matrix... "
+            cooccurence_matrix = sp.coo_matrix(cooccurence_matrix)
+            cooccurence_matrix = cooccurence_matrix.asfptype()
+            print datetime.now(), " Sparse matrix built."
+
+            start_time = datetime.now()
+            print datetime.now(), " Normalizing co-occurrence_matrix... "
+            '''
             for x in range(word_num):
                 for y in range(word_num):
                     cooccurence_matrix[x][y] = log(1+cooccurence_matrix[x][y])
             print "Normalization finished. "
+            '''
+            cooccurence_matrix.log1p()
             print datetime.now()-start_time
 
             # then we do SVD to reduce the dimension
-            '''
-            print "Doing SVD..."
+
+            print datetime.now(), " Doing SVD..."
             start_time = datetime.now()
-            self.lsa_matrix = LSA(cooccurence_matrix).transform(FYPsetting.LSA_DIMENSION)
-            print "SVD finished."
+            cooccurence_matrix = LSA(cooccurence_matrix).transform(FYPsetting.LSA_DIMENSION)
+            # COO_Matrix is easier to construct, CSC_Matrix is easier to access columns.
+            # this conversion is for future use.
+            # We should compare the time of constructing csc_matrix directly and constructing coo and then do this conversion
+            self.lsa_matrix = sp.coo_matrix(cooccurence_matrix).tocsc()
+            print datetime.now(), " SVD finished."
             print datetime.now()-start_time
+
+            print datetime.now(), " Total time cost: ", datetime.now()-o_time
+
             '''
-            print "Total time cost: ", datetime.now()-o_time
             # the next step is to save this lsa_matrix and keyword index mapping into database
             start_time = datetime.now()
             print "Saving matrix..."
@@ -163,7 +180,7 @@ class LSAMatrix:
                 f.write(str(cooccurence_matrix))
             print "Matrix saved."
             print datetime.now()-start_time
-
+            '''
 
 
     def __update_cooccurrence_mat__(self, cooccurence_matrix ,index1, index2):
@@ -216,30 +233,37 @@ class LSAMatrix:
         term_vector2 = []
         index1 = -1
         index2 = -1
+        lsa_matrix = self.lsa_matrix
 
+        start_time = datetime.now()
         for word1 in term_list1:
             try:
                 index1 = self.keyword_index_mapping[word1]
             except:
                 print word1, ": indexing error 1"
 
+            print datetime.now(), " Indexing word1 completes."
             if not index1 == -1:
                 if term_vector1 ==[]:
-                    term_vector1 = self.lsa_matrix[index1]
+                    term_vector1 = self.lsa_matrix.getcol(index1).toarray().flatten()#to ndarray > become (X, 1) > flatten
                 else:
-                    term_vector1 = term_vector1+self.lsa_matrix[index1]
+                    term_vector1 = term_vector1+self.lsa_matrix.getcol(index1).toarray().flatten()#[index1]
+        print datetime.now(), " Vector 1 built, cost ", datetime.now()-start_time
 
+        start_time = datetime.now()
         for word2 in term_list2:
             try:
                 index2 = self.keyword_index_mapping[word2]
             except:
                 print word2, ": indexing error 2"
 
+            print datetime.now(), " Indexing word2 completes."
             if not index2 == -1:
                 if term_vector2 ==[]:
-                    term_vector2 = self.lsa_matrix[index2]
+                    term_vector2 = self.lsa_matrix.getcol(index2).toarray().flatten()#[index2]
                 else:
-                    term_vector2 = term_vector1+self.lsa_matrix[index2]
+                    term_vector2 = term_vector1+self.lsa_matrix.getcol(index2).toarray().flatten()#[index2]
+        print datetime.now(), " Vector 2 built, cost ", datetime.now()-start_time
 
         if 1 not in (term_vector1==[], term_vector2==[]):
         #http://stackoverflow.com/questions/1075652/using-the-and-and-not-operator-in-python
@@ -249,8 +273,12 @@ class LSAMatrix:
             return 0
 
 if __name__ == "__main__":
+    print np.__config__.show()
+    print "======================================================"
     lsa = LSAMatrix(0, 0)
     lsa.update()
     #print "The similarity between silicon and valley is: ", lsa.similarity("silicon","valley")
-    print "The term similarity between silicon and valley is: ", lsa.term_similarity("silicon","valley")
+    start_time = datetime.now()
+    print "Calculating the similarity...\n", lsa.term_similarity("silicon","valley")
+    print "Similarity calculation cost: ", datetime.now()-start_time
     #print lsa.lsa_matrix
