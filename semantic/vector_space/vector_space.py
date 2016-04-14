@@ -1,7 +1,7 @@
 import sys
 from semantic.parser import Parser
 import re
-
+from datetime import datetime
 try:
 	import numpy
 except:
@@ -48,8 +48,11 @@ class VectorSpace:
 
 	def _get_vector_keyword_index(self, document_list):
 		""" create the keyword associated to the position of the elements within the document vectors """
+		print datetime.now(), "  Tokenizing documents..."
 		vocabulary_list = self.parser.tokenise_and_remove_stop_words(document_list)
+		print datetime.now(), "  Removing duplicated words..."
 		unique_vocabulary_list = self._remove_duplicates(vocabulary_list)
+		print datetime.now(), "  Building indexing dictionary..."
 		vector_index={}
 		offset=0
 		#Associate a position with the keywords which maps to the dimension on the vector used to represent this word

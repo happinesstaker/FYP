@@ -233,7 +233,6 @@ class LSAMatrix:
         term_vector2 = []
         index1 = -1
         index2 = -1
-        lsa_matrix = self.lsa_matrix
 
         start_time = datetime.now()
         for word1 in term_list1:

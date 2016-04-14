@@ -21,6 +21,7 @@ class LSA(Transform):
 		    Reduce the dimension of sigma by specified factor producing sigma'.
 		    Then dot product the matrices:  U . SIGMA' . VT = MATRIX'
 		"""
+		print datetime.now(), "   LSA transform called. "
 		rows,cols = self.matrix.get_shape()
 
 		if dimensions <= rows: #Its a valid reduction
@@ -42,3 +43,4 @@ class LSA(Transform):
 
 		else:
 			print "dimension reduction cannot be greater than %s" % rows
+			return self.matrix.todense()
