@@ -58,7 +58,7 @@ class LSAMatrix:
             #print "Building occurrence_matrix..."
             start_time = datetime.now()
             print datetime.now(), " Creating Vector Space..."
-            vs = VS_Co(docs[:20001], transforms = [])
+            vs = VS_Co(docs[:1001], transforms = [])
             #del docs
             print datetime.now(), " Vector Space created"
             print datetime.now() - start_time
@@ -117,7 +117,7 @@ class LSAMatrix:
                                             break
             '''
 
-            for doc_index in range(20001):#range(len(docs)):
+            for doc_index in range(1001):#range(len(docs)):
                 if doc_index%10000 == 0:
                     print datetime.now(), " doc", doc_index
                 word_index_list = vs.word_index_list_of_docs[doc_index]
@@ -239,30 +239,32 @@ class LSAMatrix:
             try:
                 index1 = self.keyword_index_mapping[word1]
             except:
-                print word1, ": indexing error 1"
+                #print word1, ": indexing error 1"
+                pass
 
-            print datetime.now(), " Indexing word1 completes."
+            #print datetime.now(), " Indexing word1 completes."
             if not index1 == -1:
                 if term_vector1 ==[]:
                     term_vector1 = self.lsa_matrix.getcol(index1).toarray().flatten()#to ndarray > become (X, 1) > flatten
                 else:
                     term_vector1 = term_vector1+self.lsa_matrix.getcol(index1).toarray().flatten()#[index1]
-        print datetime.now(), " Vector 1 built, cost ", datetime.now()-start_time
+        #print datetime.now(), " Vector 1 built, cost ", datetime.now()-start_time
 
         start_time = datetime.now()
         for word2 in term_list2:
             try:
                 index2 = self.keyword_index_mapping[word2]
             except:
-                print word2, ": indexing error 2"
+                #print word2, ": indexing error 2"
+                pass
 
-            print datetime.now(), " Indexing word2 completes."
+            #print datetime.now(), " Indexing word2 completes."
             if not index2 == -1:
                 if term_vector2 ==[]:
                     term_vector2 = self.lsa_matrix.getcol(index2).toarray().flatten()#[index2]
                 else:
                     term_vector2 = term_vector1+self.lsa_matrix.getcol(index2).toarray().flatten()#[index2]
-        print datetime.now(), " Vector 2 built, cost ", datetime.now()-start_time
+        #print datetime.now(), " Vector 2 built, cost ", datetime.now()-start_time
 
         if 1 not in (term_vector1==[], term_vector2==[]):
         #http://stackoverflow.com/questions/1075652/using-the-and-and-not-operator-in-python

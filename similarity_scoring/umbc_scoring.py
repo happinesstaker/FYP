@@ -1,42 +1,35 @@
 from datetime import date, timedelta
 from math import log1p, exp
 from nltk.corpus import wordnet as wn
-import numpy as np
+from nltk.tokenize import MWETokenizer
 import nltk
-import DBOperation
+#import DBOperation
 import FYPsetting
 from lsa_matrix import LSAMatrix
+from wordnet_boosting import WordNet_boosting
+from datetime import datetime
+import re
+import numpy as np
 
 titles_dict = {}
-LSA_Matrix = LSAMatrix()
+lsa_mat = LSAMatrix(0, 0)
+wn_bst = WordNet_boosting()
 
-def sim (word1, pos1, word2, pos2):
+def sim (token1, pos1, token2, pos2):
     '''
-    calculate the word similarity between two words
+    calculate the term similarity between two terms
+    in LSA, by doing word vectorization first and combine vecotrs
+    in WordNet Boosting, term similarity is already contained
     ignored the proposed weighing method for path edge
     should add the LSA measurement later
-    :param word1:
-    :param pos1:
-    :param word2:
-    :param pos2:
     :return: a the similarity score
     '''
-
-    if wn.synsets(word1, pos1) & wn.synsets(word2, pos2):
-        # take the case where a word has multiple synsets into account
-        # as said in the umbc paper, choose the largest value
-        len1 = len(wn.synsets(word1, pos1))
-        len2 = len(wn.synsets(word2, pos2))
-        sim_mat = np.matrix(np.arange(len1*len2).reshape((len2,len1)))
-        for x in range[:len1]:
-            for y in range[:len2]:
-                s1 = wn.synsets(word1, pos1)[x]
-                s2 = wn.synsets(word2, pos2)[y]
-                sim_mat[y][x]=s1.shortest_path_distance(s2)
-        distance = sim_mat.max()
-        return exp(-0.25*distance)+LSA_Matrix.similarity(word1, word2)
-    else:
-        return LSA_Matrix.similarity(word1, word2)
+    simi = wn_bst.term_similarity(token1, pos1, token2, pos2)+lsa_mat.term_similarity(token1, token2)
+    #print token1, " and ", token2, " has similarity of ", simi
+    # set the ceiling as mentioned in the paper
+    if simi>1:
+        simi = 1
+    return simi
 
 def inverse_log_fq(token, sent):
     '''
@@ -80,10 +73,21 @@ def umbc_penalty(token, pos, sent, simi, counterpart):
     penalty = 0
     if simi<0.05:
         penalty += simi+inverse_log_fq(token, sent)*pos_weight(pos)
-    if token.antonyms:
-        for x in range (len(token.antonyms)):
-            if token.antonyms[x].name() == counterpart:
-                penalty += simi+0.5
+
+    tag = wn_bst.get_wordnet_pos(pos)
+    s = wn.synsets(token, tag)
+    if not s==[]:
+
+        #try:
+            for y in range(len(s)):
+                ant = s[y].lemmas()[0].antonyms()
+                if not ant == []:
+                    for x in range (len(ant)):
+                        if ant[x].name() == counterpart:
+                            penalty += (simi+0.5)
+                            print datetime.now(), "   ", token, "antonyms found."
+        #except:
+            #pass
     return penalty
 
 def umbc_sum(sim_dict):
@@ -94,9 +98,9 @@ def umbc_sum(sim_dict):
     '''
     sum = 0
     for result in sim_dict:
-        sum+=result['sim']
-        sum-=result['p']
-
+        sum+=sim_dict[result]['sim']
+        sum-=sim_dict[result]['p']
+    return sum
 
 def umbc_sim (title1, title2):
     '''
@@ -105,50 +109,66 @@ def umbc_sim (title1, title2):
     :param title2:
     :return: a bool value, 0 for similar, 1 for not similar
     '''
-    tokens1 = nltk.word_tokenize(title1)
+    print datetime.now(), " Preprocessing titles..."
+    title1 = title_prepocessing(title1)
+    title2 = title_prepocessing(title2)
+    print datetime.now(), " Tokenization and parsing starts..."
+    tokenizer = MWETokenizer(wn_bst.multi_words_xpn())
+    tokens1 = tokenizer.tokenize(title1.split())
+    print datetime.now(), " First title tokenized."
     tagged1 = nltk.pos_tag(tokens1)
-    #tokens1 = list(set(sent1)) #remove duplicate
-    tokens2 = nltk.word_tokenize(title2)
+    print datetime.now(), " First title parsed."
+    tokens2 = tokenizer.tokenize(title2.split())
+    print datetime.now(), " Second title tokenized."
     tagged2 = nltk.pos_tag(tokens2)
-    #tokens2 = list(set(sent2)) #remove duplicate
+    print datetime.now(), " Second title parsed."
+    # remove tokens that are not supported by WordNet
+    tagged1 = [x for x in tagged1 if not wn_bst.get_wordnet_pos(x[1])=='']
+    tagged2 = [x for x in tagged2 if not wn_bst.get_wordnet_pos(x[1])=='']
+    print datetime.now(), " Tokens cleaned."
 
     # use a matrix to store the result for later use
-    Matrix = [[0 for x in range(len(tokens1))] for x in range(tokens2)]
+    print datetime.now(), " Building matrix..."
+    len1 = len(tagged1)
+    len2 = len(tagged2)
+    Matrix = np.zeros((len2,len1))
     result1 = {}
     result2 = {}
-    for x in range(len(tokens1)):
-        token1=tokens1[x]
-        pos1 = tagged1(x)[1]
+    for x in range(len1):
+        token1=tagged1[x][0]
+        pos1 = tagged1[x][1]
         simi = 0
         counterpart1 = ''
-        for y in range(len(tokens2)):
-            token2 = tokens2[y]
-            pos2 = tagged2(y)[1]
-            Matrix[y][x] = sim(token1, pos1, token2, pos2)
-            if Matrix[y][x]>simi:
-                simi = Matrix[y][x]
+        for y in range(len2):
+            token2 = tagged2[y][0]
+            pos2 = tagged2[y][1]
+            Matrix[y, x] = sim(token1, pos1, token2, pos2)
+            if Matrix[y,x]>simi:
+                simi = Matrix[y, x]
                 counterpart1 = token2
         penalty1 = umbc_penalty(token1, pos1, tokens1, simi, counterpart1)
         result1[token1] = {'sim':simi, 'p':penalty1}
-
-    for y in range (0, len(tokens2)):
-        token2=tokens2[y]
-        pos2 = tagged2(y)[1]
-        simi = 0;
+    print datetime.now(), " Title1 result calculated..."
+    for y in range (0, len2):
+        token2=tagged2[y][0]
+        pos2 = tagged2[y][1]
+        simi = 0
         counterpart2 = ''
-        for x in range(0, len(tokens1)):
-            if Matrix[y][x]>simi:
-                simi = Matrix[y][x]
+        for x in range(0, len1):
+            if Matrix[y,x]>simi:
+                simi = Matrix[y,x]
                 counterpart2 = tokens1[x]
         penalty2 = umbc_penalty(token2, pos2, tokens2, simi, counterpart2)
         result2[token2] = {'sim':simi, 'p':penalty2}
+    print datetime.now(), " Title2 result calculated..."
+    sum1 = umbc_sum(result1)
+    sum1 = float(sum1)
+    sum2 = umbc_sum(result2)
+    sum2 = float(sum2)
+    print sum1, sum2
+    score = sum1/(2*len1)+sum2/(2*len2)
 
-    score = umbc_sum(result1)/(2*len(tokens1))+umbc_sum(result2)/(2*len(tokens2))
-
-    if score > FYPsetting.SIMI_THRESHOLD:
-        return True
-    else:
-        return False
+    return score
 
 def ini():
     '''
@@ -156,7 +176,8 @@ def ini():
     initialize LSA_Matrix
     :return:
     '''
-    global LSA_Matrix
+    global lsa_mat
+    global wn_bst
     global titles_dict
     for i in range (0, FYPsetting.COMPARING_DATES):
         day = date.today() - timedelta(i)
@@ -164,7 +185,33 @@ def ini():
         titles = DBOperation.query_title(day_digi)
         titles_dict.append(titles)
 
-    LSA_Matrix = LSAMatrix(DBOperation.query_lsa())
+    lsa_mat.update()
+
+def title_prepocessing(string):
+    string = string.lstrip()
+    string = string.rstrip()
+    string = string.replace("\'", "")
+    string = string.replace("\"", "")
+    string = string.replace(".","")
+    string = string.replace("!","")
+    string = string.replace(",","")
+    string = string.replace("?","")
+    string = string.replace(":","")
+    string = string.replace("<","")
+    string = string.replace(">","")
+    string = string.replace(";","")
+    string = string.replace("[","")
+    string = string.replace("]","")
+    string = string.replace("{","")
+    string = string.replace("}","")
+    string = string.replace("(","")
+    string = string.replace(")","")
+    string = string.replace("\\", "")
+    string = string.replace("\s+"," ")
+    string = string.replace("\t", " ")
+    string = string.replace("\n", " ")
+    string = re.sub(' +',' ',string)
+    return string
 
 def title_cmp():
     '''
@@ -200,4 +247,6 @@ def title_cmp():
     return title_candidates
 
 if __name__ == '__main__':
-    title_cmp()
+    #title_cmp()
+    print umbc_sim("Apple is bad.",
+             "Apple is good.")
