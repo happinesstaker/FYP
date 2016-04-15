@@ -64,7 +64,9 @@ Query titles from database for *w* days from today to compare, return a list of 
 ---
 #### UPDARTE: UMBC with LSA finished (3.27)
 
-LSA is implemented as stated in the paper, WINDOW_SIZE is set to 4, DIMENSION for SVD is set to 300
+LSA is implemented as stated in the paper, WINDOW_SIZE is set to 4.
+
+DIMENSION for SVD is set to 300, which is empirically established by LSA researchers.
 
 *Need to design corpus_table to store corpus documents and the precalculated lsa matrix*
 

@@ -3,7 +3,7 @@ from math import log1p, exp
 from nltk.corpus import wordnet as wn
 from nltk.tokenize import MWETokenizer
 import nltk
-#import DBOperation
+import DBOperation
 import FYPsetting
 from lsa_matrix import LSAMatrix
 from wordnet_boosting import WordNet_boosting
@@ -85,7 +85,7 @@ def umbc_penalty(token, pos, sent, simi, counterpart):
                     for x in range (len(ant)):
                         if ant[x].name() == counterpart:
                             penalty += (simi+0.5)
-                            print datetime.now(), "   ", token, "antonyms found."
+                            print datetime.now(), " ", token, ": antonyms found."
         #except:
             #pass
     return penalty
@@ -179,10 +179,11 @@ def ini():
     global lsa_mat
     global wn_bst
     global titles_dict
-    for i in range (0, FYPsetting.COMPARING_DATES):
+    for i in range (FYPsetting.COMPARING_DATES):
         day = date.today() - timedelta(i)
         day_digi = "%04d%02d%02d" % (day.year, day.month, day.day)
         titles = DBOperation.query_title(day_digi)
+        print datetime.now(), " Title2s extracted."
         titles_dict.append(titles)
 
     lsa_mat.update()
@@ -248,5 +249,6 @@ def title_cmp():
 
 if __name__ == '__main__':
     #title_cmp()
+    ini()
     print umbc_sim("Apple is bad.",
              "Apple is good.")

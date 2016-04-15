@@ -30,11 +30,16 @@ class WordNet_boosting:
                     for y in range(len2):
                         s2 = wn.synsets(token2, tag2)[y]
                         if s1.shortest_path_distance(s2) == None:
-                            sim_mat[y, x] = 1000000
+                            if pos1==pos2:
+                                sim_mat[y, x] = 1000000
+                            else:
+                                sim_mat[y, x] = 1000001
                         else:
                             sim_mat[y, x]=s1.shortest_path_distance(s2)
                 distance = sim_mat.min()
                 if distance == 1000000:
+                    return 0.0000001
+                elif distance == 1000001:
                     return 0
                 else:
                     return exp(-0.25*distance)
