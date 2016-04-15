@@ -34,7 +34,7 @@ def Twitter_get_data(company):
         
         #pre-process a readable title
         title_list = [ value for value in result["text"].split(" ") if not value.startswith("http") and not value.startswith("#") and not value.startswith("@") ]
-        final_title = (' '.join(title_list)).encode('latin-1', 'ignore')
+        final_title = ' '.join(title_list)
 
         #parse and extract article
         for word in cur_text:
@@ -51,10 +51,11 @@ def Twitter_get_data(company):
                 content = extractor.getText()
                 if content is not "":
                     now = datetime.datetime.now()
-                    content_list.append({"title": final_title[:FYPsetting.TITLE_LEN_LIMIT],
-                                        "article": (content.encode('latin-1', 'ignore'))[:FYPsetting.CONTENT_LEN_LIMIT],
-                                        "link":utf_word[:FYPsetting.LINK_LEN_LIMIT],
+                    content_list.append({"title": final_title,
+                                        "article": content,
+                                        "link": utf_word,
                                         "source": "TWITTER",
+                                        "target": company,
                                         "date": "%04d%02d%02d" % (now.year, now.month, now.day),
                                         "hash": hashlib.sha224(result["text"].encode("UTF-8")).hexdigest()})
                 break

@@ -24,17 +24,21 @@ def NASDAQ_get_data(company_code):
     html = conn.read()
     
     soup = BeautifulSoup(html)
-    content_div = soup.find("div", {'class': "headlines"})
+    content_div = soup.find("div", {'class': "news-headlines"})
+    
+    # No news found?
+    if content_div==None:
+        return
+        
     links = content_div.findAll('a')
     
     content_list = list()
     
     for tag in links:
-        if tag.parent.name == "small":
+        if tag.parent.name != "span":
             continue
         link = tag.get('href', None)
         title = tag.contents[0]
-        #print title
         try:
             news_page = urllib2.urlopen(link).read()
             extractor = Extractor(extractor='ArticleExtractor', html=news_page)
@@ -42,10 +46,11 @@ def NASDAQ_get_data(company_code):
             continue
         content = extractor.getText()
         now = datetime.datetime.now()
-        content_list.append({"title": (title.encode('latin-1', 'ignore'))[:FYPsetting.TITLE_LEN_LIMIT],
-                            "article": (content.encode('latin-1', 'ignore'))[:FYPsetting.CONTENT_LEN_LIMIT],
-                            "link": link[:FYPsetting.LINK_LEN_LIMIT],
+        content_list.append({"title": title,
+                            "article": content,
+                            "link": link,
                             "source": "NASDAQ",
+                            "target": company_code,
                             "date": "%04d%02d%02d" % (now.year, now.month, now.day),
                             "hash": hashlib.sha224(title.encode("UTF-8")).hexdigest()})
     

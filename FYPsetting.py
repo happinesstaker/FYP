@@ -1,15 +1,18 @@
 #This is the main setting file for this FYP project
 
 QUERY_PAGE = 10
+CORPUS_DELIM = "+++---+++\n"
 
 #Length of char are limited in DB
 TITLE_LEN_LIMIT = 290
 LINK_LEN_LIMIT = 290
+TARGET_LEN_LIMIT = 190
 CONTENT_LEN_LIMIT = 5900
 COMPARING_DATES = 5
 SIMI_THRESHOLD = 2
 LSA_DIMENSION = 300
 WINDOW_SIZE = 4
+
 WORDNET_FORMAT = {"NN":'n',
                   "VB":'v',
                   "JJ":'a',
