@@ -5,6 +5,7 @@ from twitter import *
 import datetime
 import hashlib
 import json
+import os
 
 import FYPsetting
 import DBOperation
@@ -12,7 +13,7 @@ import DBOperation
 
 def Twitter_crawler():
     companies = dict()
-    with open("target_companies.json","r") as infile:
+    with open("%s/target_companies.json" % os.path.dirname(os.path.realpath(__file__)),"r") as infile:
         companies = json.load(infile)
     for company in companies["all_companies"]:
         Twitter_get_data(company)

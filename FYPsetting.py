@@ -19,7 +19,7 @@ WORDNET_FORMAT = {"NN":'n',
                   "RB": 'r'
                   }
 
-DB_CONFIG = {"dbname":"Articles",
+DB_CONFIG = {"dbname":"Articles",    
              "user":"FYP",
              "password":"FYP",
              "host":"localhost",

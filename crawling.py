@@ -10,8 +10,7 @@ from crawler_twitter import Twitter_crawler
 from DBOperation import clean_db
 
 
-if __name__ == "__main__":
-
+def start_crawling():
     # clean old data first, set 3 days as default
     clean_db(3)
 
@@ -24,5 +23,6 @@ if __name__ == "__main__":
     for t in thread_list:
         t.start()
 
-    for t in thread_list:
-        t.join()
+
+if __name__ == "__main__":
+    start_crawling()
