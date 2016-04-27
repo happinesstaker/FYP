@@ -4,6 +4,7 @@ import feedparser
 import hashlib
 import json
 import urllib2
+import os
 
 import DBOperation
 import FYPsetting
@@ -11,7 +12,7 @@ import FYPsetting
 
 def GOOGLE_crawler():
     companies = dict()
-    with open("target_companies.json","r") as infile:
+    with open("%s/target_companies.json" % os.path.dirname(os.path.realpath(__file__)),"r") as infile:
         companies = json.load(infile)
     for company in companies["all_companies"]:
         GOOGLE_get_data(company)
