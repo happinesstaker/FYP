@@ -23,6 +23,7 @@ class LSAMatrix:
     """
     DATA_PATH = "/Volumes/FAT/FYP_data" #os.path.dirname(os.path.realpath(__file__))
     LSA_CORPUS_FILE = '%s/../../LSA_corpus' %  os.path.dirname(os.path.realpath(__file__))
+    LSA_CORPUS_FILE1 = '%s/../evaluation/msr_paraphrase_train.txt' %  os.path.dirname(os.path.realpath(__file__))
     LSA_MATRIX_FILE = '%s/LSA_matrix' %  DATA_PATH
     TERM_DOC_FILE_BIN = '%s/term_doc.bin' %  DATA_PATH
     TERM_DOC_FILE = '%s/term_doc.txt' %  DATA_PATH
@@ -33,38 +34,52 @@ class LSAMatrix:
     def __init__(self, matrix, mapping):
         self.lsa_matrix = matrix
         self.keyword_index_mapping = mapping
+        self.update()
 
     def update(self):
         try:
-            print datetime.now(), " Try loading stored matrices..."
+            #print datetime.now(), " Try loading stored matrices..."
             raise OSError
             #start_time = datetime.now()
             f = open(LSAMatrix.LSA_MATRIX_FILE, 'rb')
             self.lsa_matrix = pickle.load(f)
             self.keyword_index_mapping = pickle.load(f)
             f.close()
-            print datetime.now()-start_time
+            #print datetime.now()-start_time
         except:
-            print datetime.now(), " Matrix does not exist, creating now..."
+            #print datetime.now(), " Matrix does not exist, creating now..."
             o_time = datetime.now()
+            '''
             lsa_corpus_io_stream = open(LSAMatrix.LSA_CORPUS_FILE, 'r')
             docs = lsa_corpus_io_stream.read().split("+++---+++")
             for doc in docs:
                 doc = doc.replace("\n", " ")
-            print datetime.now(), (" There are %d docs"% len(docs))
+
+            '''
+            docs = []
+            with open(LSAMatrix.LSA_CORPUS_FILE1, 'r') as corp:
+                line = corp.readline()
+                line = corp.readline()
+                while line:
+                    content = line.split("\t")
+                    docs.append(content[3])
+                    docs.append(content[4])
+                    line = corp.readline()
+
+            #print datetime.now(), (" There are %d docs"% len(docs))
             #print docs[74]
             #exit(0)
             start_time = datetime.now()
             #print "Building occurrence_matrix..."
             start_time = datetime.now()
             print datetime.now(), " Creating Vector Space..."
-            vs = VS_Co(docs[:1001], transforms = [])
+            vs = VS_Co(docs, transforms = [])
             #del docs
             print datetime.now(), " Vector Space created"
             print datetime.now() - start_time
             '''
-            print "Occurrence_matrix built."
-            print datetime.now()-start_time
+            #print "Occurrence_matrix built."
+            #print datetime.now()-start_time
             #print occurrence_matrix.collection_of_document_term_vectors
             #print occurrence_matrix.collection_of_document_term_lists
 
@@ -78,8 +93,8 @@ class LSAMatrix:
 
                     f2.write("".join(str(doc_word_list)))
                     f2.write("\n---+++---\n")
-            print "Occurrence Matrix saved."
-            print datetime.now()-start_time
+            #print "Occurrence Matrix saved."
+            #print datetime.now()-start_time
             exit(0)
             '''
 
@@ -117,9 +132,9 @@ class LSAMatrix:
                                             break
             '''
 
-            for doc_index in range(1001):#range(len(docs)):
-                if doc_index%10000 == 0:
-                    print datetime.now(), " doc", doc_index
+            for doc_index in range(len(docs)):
+                #if doc_index%10000 == 0:
+                    #print datetime.now(), " doc", doc_index
                 word_index_list = vs.word_index_list_of_docs[doc_index]
                 #print word_index_list
                 length = len(word_index_list)
@@ -143,7 +158,7 @@ class LSAMatrix:
             start_time = datetime.now()
             cooccurence_matrix = sp.coo_matrix(cooccurence_matrix)
             cooccurence_matrix = cooccurence_matrix.asfptype()
-            print datetime.now(), " Sparse matrix built."
+            #print datetime.now(), " Sparse matrix built."
 
             start_time = datetime.now()
             print datetime.now(), " Normalizing co-occurrence_matrix... "
@@ -151,7 +166,7 @@ class LSAMatrix:
             for x in range(word_num):
                 for y in range(word_num):
                     cooccurence_matrix[x][y] = log(1+cooccurence_matrix[x][y])
-            print "Normalization finished. "
+            #print "Normalization finished. "
             '''
             cooccurence_matrix.log1p()
             print datetime.now()-start_time
@@ -173,7 +188,7 @@ class LSAMatrix:
             '''
             # the next step is to save this lsa_matrix and keyword index mapping into database
             start_time = datetime.now()
-            print "Saving matrix..."
+            #print "Saving matrix..."
             with open(LSAMatrix.LSA_MATRIX_FILE, 'wb') as f:
                 #pickle.dump(self.lsa_matrix, f)
                 #pickle.dump(self.keyword_index_mapping, f)
@@ -224,8 +239,10 @@ class LSAMatrix:
         parser = Parser()
         # words in terms are connected with underscore after the NLTK MWE tokenization
         # replace it with " " to make it compatible with parser here
-        str(term1).replace("_", " ")
-        str(term2).replace("_", " ")
+        term1 = str(term1).replace("_", " ")
+        term2 = str(term2).replace("_", " ")
+        term1 = str(term1).replace("-", " ")
+        term2 = str(term2).replace("-", " ")
 
         term_list1 = parser.tokenise_and_remove_stop_words([term1]) # the defined argument is document_list
         term_list2 = parser.tokenise_and_remove_stop_words([term2]) # the defined argument is document_list
@@ -277,9 +294,10 @@ if __name__ == "__main__":
     print np.__config__.show()
     print "======================================================"
     lsa = LSAMatrix(0, 0)
-    lsa.update()
     #print "The similarity between silicon and valley is: ", lsa.similarity("silicon","valley")
     start_time = datetime.now()
-    print "Calculating the similarity...\n", lsa.term_similarity("silicon","valley")
+    str1 = "keynote"
+    str2 = "sunday"
+    print "Calculating the similarity...\n", lsa.term_similarity(str1,str2)
     print "Similarity calculation cost: ", datetime.now()-start_time
     #print lsa.lsa_matrix

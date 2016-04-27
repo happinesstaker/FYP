@@ -6,14 +6,17 @@ import nltk
 import DBOperation
 import FYPsetting
 from lsa_matrix import LSAMatrix
+from tfcos_scoring import TfSim
 from wordnet_boosting import WordNet_boosting
+
 from datetime import datetime
 import re
 import numpy as np
 
-titles_dict = {}
+existing_articles = {}
 lsa_mat = LSAMatrix(0, 0)
 wn_bst = WordNet_boosting()
+#tf_sim = TfSim()
 
 def sim (token1, pos1, token2, pos2):
     '''
@@ -24,9 +27,20 @@ def sim (token1, pos1, token2, pos2):
     should add the LSA measurement later
     :return: a the similarity score
     '''
-    simi = wn_bst.term_similarity(token1, pos1, token2, pos2)+lsa_mat.term_similarity(token1, token2)
+    lsa_sim = lsa_mat.term_similarity(token1, token2)
+    wn_sim = wn_bst.term_similarity(token1, pos1, token2, pos2)
+    simi = 0
+    if token1 == token2 and pos1 == pos2:
+        simi = 1.0
+    elif lsa_sim>0.8 and wn_sim<0.2:
+        simi = 0.5*lsa_sim + 0.5*(0.5+wn_sim)
+    elif lsa_sim <0.1 and wn_bst<0.8:#filter
+        simi = 0
+    else:
+        simi = 0.5*lsa_sim+0.5*wn_sim
     #print token1, " and ", token2, " has similarity of ", simi
     # set the ceiling as mentioned in the paper
+    print token1, pos1, token2, pos2, "lsa: ",lsa_sim, "wn: ",wn_sim, "sim: ", simi
     if simi>1:
         simi = 1
     return simi
@@ -71,7 +85,7 @@ def umbc_penalty(token, pos, sent, simi, counterpart):
     :return:
     '''
     penalty = 0
-    if simi<0.05:
+    if simi<0.2:
         penalty += simi+inverse_log_fq(token, sent)*pos_weight(pos)
 
     tag = wn_bst.get_wordnet_pos(pos)
@@ -85,7 +99,7 @@ def umbc_penalty(token, pos, sent, simi, counterpart):
                     for x in range (len(ant)):
                         if ant[x].name() == counterpart:
                             penalty += (simi+0.5)
-                            print datetime.now(), " ", token, ": antonyms found."
+                            #print datetime.now(), " ", token, ": antonyms found."
         #except:
             #pass
     return penalty
@@ -109,26 +123,26 @@ def umbc_sim (title1, title2):
     :param title2:
     :return: a bool value, 0 for similar, 1 for not similar
     '''
-    print datetime.now(), " Preprocessing titles..."
+    #print datetime.now(), " Preprocessing titles..."
     title1 = title_prepocessing(title1)
     title2 = title_prepocessing(title2)
-    print datetime.now(), " Tokenization and parsing starts..."
+    #print datetime.now(), " Tokenization and parsing starts..."
     tokenizer = MWETokenizer(wn_bst.multi_words_xpn())
     tokens1 = tokenizer.tokenize(title1.split())
-    print datetime.now(), " First title tokenized."
+    #print datetime.now(), " First title tokenized."
     tagged1 = nltk.pos_tag(tokens1)
-    print datetime.now(), " First title parsed."
+    #print datetime.now(), " First title parsed."
     tokens2 = tokenizer.tokenize(title2.split())
-    print datetime.now(), " Second title tokenized."
+    #print datetime.now(), " Second title tokenized."
     tagged2 = nltk.pos_tag(tokens2)
-    print datetime.now(), " Second title parsed."
+    #print datetime.now(), " Second title parsed."
     # remove tokens that are not supported by WordNet
     tagged1 = [x for x in tagged1 if not wn_bst.get_wordnet_pos(x[1])=='']
     tagged2 = [x for x in tagged2 if not wn_bst.get_wordnet_pos(x[1])=='']
-    print datetime.now(), " Tokens cleaned."
+    #print datetime.now(), " Tokens cleaned."
 
     # use a matrix to store the result for later use
-    print datetime.now(), " Building matrix..."
+    #print datetime.now(), " Building matrix..."
     len1 = len(tagged1)
     len2 = len(tagged2)
     Matrix = np.zeros((len2,len1))
@@ -147,8 +161,8 @@ def umbc_sim (title1, title2):
                 simi = Matrix[y, x]
                 counterpart1 = token2
         penalty1 = umbc_penalty(token1, pos1, tokens1, simi, counterpart1)
-        result1[token1] = {'sim':simi, 'p':penalty1}
-    print datetime.now(), " Title1 result calculated..."
+        result1[token1] = {'sim':simi, 'p':penalty1, 'counter':counterpart1}
+    #print datetime.now(), " Title1 result calculated..."
     for y in range (0, len2):
         token2=tagged2[y][0]
         pos2 = tagged2[y][1]
@@ -157,16 +171,23 @@ def umbc_sim (title1, title2):
         for x in range(0, len1):
             if Matrix[y,x]>simi:
                 simi = Matrix[y,x]
-                counterpart2 = tokens1[x]
+                counterpart2 = tagged1[x][0]
+                print token2, counterpart2, simi
         penalty2 = umbc_penalty(token2, pos2, tokens2, simi, counterpart2)
-        result2[token2] = {'sim':simi, 'p':penalty2}
-    print datetime.now(), " Title2 result calculated..."
+        result2[token2] = {'sim':simi, 'p':penalty2, 'counter':counterpart2}
+    #print datetime.now(), " Title2 result calculated..."
+    print result1
     sum1 = umbc_sum(result1)
     sum1 = float(sum1)
+    print result2
     sum2 = umbc_sum(result2)
     sum2 = float(sum2)
-    print sum1, sum2
+    #print sum1, sum2
     score = sum1/(2*len1)+sum2/(2*len2)
+    #cut upper and lower bound
+    if score < 0:
+        score = 0
+
 
     return score
 
@@ -178,13 +199,13 @@ def ini():
     '''
     global lsa_mat
     global wn_bst
-    global titles_dict
+    global existing_articles
     for i in range (FYPsetting.COMPARING_DATES):
         day = date.today() - timedelta(i)
         day_digi = "%04d%02d%02d" % (day.year, day.month, day.day)
-        titles = DBOperation.query_title(day_digi)
-        print datetime.now(), " Title2s extracted."
-        titles_dict.append(titles)
+        titles = DBOperation.query_articles(day_digi)
+        #print datetime.now(), " Title2s extracted."
+        existing_articles.append(titles)
 
     lsa_mat.update()
 
@@ -214,41 +235,67 @@ def title_prepocessing(string):
     string = re.sub(' +',' ',string)
     return string
 
-def title_cmp():
+def sim_score(doc1, doc2):
+    return 0.5*umbc_sim(doc1[0], doc1[0])+ 0.5*tf_sim.cos_similarity(doc1[1], doc2[1])
+
+def article_cmp(curr_article = ("currencet title", "current body")):
     '''
+
     compare today's articles with previous 5 days
     :return: a list of articles that are not similar with previous not others in today
     '''
-    ini()
-    title_candidates = []
-    for curr_title in titles_dict[0]:
-        sim = False
-        # compare with newly selected candidates first
-        if title_candidates:
-            for candidate in title_candidates:
-                if umbc_sim(curr_title, candidate):
-                    sim = True
+    #ini()
+    global existing_articles
+    existing_articles = {"This is title 1":"This is body 1", "Here is title 1":"Here is body 1"}
+    article_candidates = {}
+    '''
+    #for curr_article in curr_articles:
+    '''
+    sim = False
+    # compare with newly selected candidates first
+    if not article_candidates=={}:
+        for candidate in article_candidates:
+            # This weight can be adjusted
+            score = sim_score(curr_article, candidate)
+            #print curr_article, candidate, "score is: ", score
+            if score > FYPsetting.SIMI_THRESHOLD:
+                sim = True
+                break
+
+    # then compare with articles fed to users earlier
+    if not sim:
+        '''
+        for i in range(1, FYPsetting.COMPARING_DATES):
+            print i
+            if existing_articles[i]:
+                if not sim:
+                    for existing_article in existing_articles[i]:# existing_articles is a list of article list by date
+                        score = sim_score(curr_article, existing_article)
+                        if score > FYPsetting.SIMI_THRESHOLD:
+                            sim = True
+                            break
+                else:
                     break
+        '''
 
-        # then compare with articles fed to users earlier
-        if not sim:
-            for i in range(1, FYPsetting.COMPARING_DATES):
-                if titles_dict[i]:
-                    if not sim:
-                        for prev_title in titles_dict[i]:
-                            if umbc_sim(curr_title, prev_title):
-                                sim = True
-                                break
-                    else:
-                        break
 
-        if not sim:
-            title_candidates.extend(curr_title)
+        for existing_article in existing_articles:# existing_articles is a list of article list by date
+            score = sim_score(curr_article, existing_article)
+            #print curr_article, existing_article, "score is: ", score
+            if score > FYPsetting.SIMI_THRESHOLD:
+                sim = True
+                break
 
-    return title_candidates
+
+    if not sim:
+        # is there any cases where two articles have the same title?
+        article_candidates[curr_article[0]]=curr_article[1]
+
+    return article_candidates
 
 if __name__ == '__main__':
     #title_cmp()
-    ini()
-    print umbc_sim("Apple is bad.",
-             "Apple is good.")
+    #ini()
+    #print umbc_sim("Apple is bad.","Apple is good.")
+
+    print article_cmp()
