@@ -29,17 +29,14 @@ class WordNet_boosting:
                     s1 = wn.synsets(token1, tag1)[x]
                     for y in range(len2):
                         s2 = wn.synsets(token2, tag2)[y]
-                        if s1.shortest_path_distance(s2) == None:
-                            #if pos1==pos2:
-                            sim_mat[y, x] = 1000001
-                            #else:
-                                #sim_mat[y, x] = 1000001
+                        if s1 in s2.hypernyms() or s2 in s1.hypernyms():
+                            sim_mat[y, x]=1
+                        elif s1 in s2.similar_tos() or s2 in s1.similar_tos():
+                            sim_mat[y, x]=1
                         else:
-                            sim_mat[y, x]=s1.shortest_path_distance(s2)
+                            sim_mat[y, x]=1000000
                 distance = sim_mat.min()
                 if distance == 1000000:
-                    return 0.0000001
-                elif distance == 1000001:
                     return 0
                 else:
                     return exp(-0.25*distance)

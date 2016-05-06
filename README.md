@@ -1,73 +1,73 @@
 # FYP - FLIN1
+
+#### System Requirement
+Language: Python 2.7
+
+Third-party Library:
+
+Crawler: BoilerPipe; feedparser; twitter; oauth2
+
+Model:  nltk; nltk.wordnet; numpy (with OpenBlas linkage);scipy; scipy.sparse; sklearn; gensim
+
+File Format: JSON
+
 ---
 #### Function of modules
 
 *All modules are renamed for clarity*
 
->crawler_twitter.py execute twitter search and follow external link
+>crawler_twitter.py execute twitter search and follow external link, use API & OAuth
 
->crawler_nyt.py search NY Times Database
+>crawler_nyt.py search NY Times Database, use API by NYT
 
->crawler_nasdaq.py search in NASDAQ news
+>crawler_nasdaq.py search in NASDAQ news, use BeautifulSoup to extract webpage elements
 
->crawler_google.py use Google news RSS
+>crawler_google.py use Google news RSS, use RSS URL
 
 ---
-#### UPDATE: Instruction for database (12.28)
+#### Instruction for crawler & DB
 
 To access DB:
 
-`enter http://54.201.171.89/phppgadmin/ in browser`
+`enter http://[DB Server IP]/phppgadmin/ in browser`
 
 *ALL User&Pass is FYP*
 
-To manually crawl data, in AWS VM, run
+To run crawler:
+
+in AWS VM, run
 `python crawling.py`
 in FYP folder
 
 *You can also execute each crawler seperately for debugging purpose*
 
-**DO NOT modify code** in VM for purpose of management, only update locally and push to github
+**Auto Run:** Add crawling.py to linux crontab to let it run each hour or so
 
 ---
-#### UPDATE: Modules Centralized (12.31)
 
-All modules are well organized and tested already, you can get data with them
+### Instruction for Similarity Scoring and Selection
 
-**Auto Run:** Add crawling.py to linux scheduler to let it run each hour or so
+All similarity measurements are in Python Package `similarity_scoring`
 
----
-#### UPDATE: Crawler Data Modification (2.9)
+Run `python selection.py` for article selection. Threshold and parameters are all set in `FYPSetting.py`.
 
-Pre-process Title from Twitter to let it be more readabale
+`umbc_scoring.py` is for title comparison, the return value would be in range [0,1], `lsa_matrix.py` and `wordnet_boosting.py` are two component models.
 
-Add Attribute: Data Collection Time
+`kld_scoring.py` is for body comparison. It returns a tuple with the first element from *doc1* to *doc2* and the second is for backward. They both in range [0, inf). *(from our observation, it never exceeds 50)*
 
----
-#### UPDATE: Related Company List Feature Added (2.11)
+`tfcos_socring.py` is for evaluation comparison.
 
-*Run related_company to update the list of related companies, which is saved in target_companies.json*
+Corpus file named `LSA_corpus` was downloaded from [UMBC Corpus](http://ebiquity.umbc.edu/resource/html/id/351).
 
-Query LinkedIn API for related companies like subsidiary or holding company
+*Notice: The larger the corpus used, the more accurate the result would be*
 
-Rewrite crawler to support multi-company crawling
+Files in the package `semantic` are some utilities for `umbc_scoring`
 
 ---
-#### UPDATE: UMBC Comparasion Added (2.13)
 
-Query titles from database for *w* days from today to compare, return a list of candidates
+### Instruction for evaluation
+Run `python evaluate.py [test size]`
 
-*LSA is currently omitted*
-
-*The specific rules for path distance weighing is also omitted*
-
----
-#### UPDARTE: UMBC with LSA finished (3.27)
-
-LSA is implemented as stated in the paper, WINDOW_SIZE is set to 4.
-
-DIMENSION for SVD is set to 300, which is empirically established by LSA researchers.
-
-*Need to design corpus_table to store corpus documents and the precalculated lsa matrix*
+To change corpus for evaluate, modify in GLOBAL setting in the script.
 
 

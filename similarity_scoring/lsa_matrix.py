@@ -49,13 +49,7 @@ class LSAMatrix:
         except:
             #print datetime.now(), " Matrix does not exist, creating now..."
             o_time = datetime.now()
-            '''
-            lsa_corpus_io_stream = open(LSAMatrix.LSA_CORPUS_FILE, 'r')
-            docs = lsa_corpus_io_stream.read().split("+++---+++")
-            for doc in docs:
-                doc = doc.replace("\n", " ")
 
-            '''
             docs = []
             with open(LSAMatrix.LSA_CORPUS_FILE1, 'r') as corp:
                 line = corp.readline()
@@ -77,26 +71,6 @@ class LSAMatrix:
             #del docs
             print datetime.now(), " Vector Space created"
             print datetime.now() - start_time
-            '''
-            #print "Occurrence_matrix built."
-            #print datetime.now()-start_time
-            #print occurrence_matrix.collection_of_document_term_vectors
-            #print occurrence_matrix.collection_of_document_term_lists
-
-            # save occurrence_matrix into TERM_DOC_FILE
-            start_time = datetime.now()
-            #with open(LSAMatrix.TERM_DOC_FILE_BIN, 'wb') as f1:
-                #pickle.dump(occurrence_matrix.collection_of_document_term_vectors, f1)
-                #pickle.dump(occurrence_matrix.vector_index_to_keyword_mapping, f)
-            with open(LSAMatrix.WORD_LIST_FILE, 'wb') as f2:
-                for doc_word_list in vs.word_index_list_of_docs:
-
-                    f2.write("".join(str(doc_word_list)))
-                    f2.write("\n---+++---\n")
-            #print "Occurrence Matrix saved."
-            #print datetime.now()-start_time
-            exit(0)
-            '''
 
             start_time = datetime.now()
             print datetime.now(), " Building co-occurrence_matrix..."
@@ -107,30 +81,6 @@ class LSAMatrix:
             print datetime.now(), "   Counted word numbers. "
             cooccurence_matrix = [[0 for x in range(word_num)] for x in range(word_num)]
             print datetime.now(), "   Co-occurrence matrix initialized. "
-
-            # comment out and change to the new version
-            '''
-            #for doc in docs:
-            for doc in docs:
-                terms = self.keyword_index_mapping.keys()
-                for term1 in terms:
-                    for term2 in terms:
-                        index1 = self.keyword_index_mapping[term1]
-                        index2 = self.keyword_index_mapping[term2]
-                        if not term1 == term2:
-                            if(occurrence_matrix.collection_of_document_term_dicts[docs.index(doc)].has_key(term1)
-                                   *occurrence_matrix.collection_of_document_term_dicts[docs.index(doc)].has_key(term2)):
-                                for pos1 in occurrence_matrix.collection_of_document_term_dicts[docs.index(doc)][term1]:
-                                    for pos2 in occurrence_matrix.collection_of_document_term_dicts[docs.index(doc)][term2]:
-                                        difference = pos2 - pos1
-                                        if difference<FYPsetting.WINDOW_SIZE+1 or difference>-(FYPsetting.WINDOW_SIZE+1):
-                                            if cooccurence_matrix[index1][index2]==0:
-                                                cooccurence_matrix[index1][index2] = log(2)
-                                            else:
-                                                cooccurence_matrix[index1][index2] = log(exp(cooccurence_matrix[index1][index2])+1)
-                                        elif difference>FYPsetting.WINDOW_SIZE:
-                                            break
-            '''
 
             for doc_index in range(len(docs)):
                 #if doc_index%10000 == 0:
@@ -162,12 +112,6 @@ class LSAMatrix:
 
             start_time = datetime.now()
             print datetime.now(), " Normalizing co-occurrence_matrix... "
-            '''
-            for x in range(word_num):
-                for y in range(word_num):
-                    cooccurence_matrix[x][y] = log(1+cooccurence_matrix[x][y])
-            #print "Normalization finished. "
-            '''
             cooccurence_matrix.log1p()
             print datetime.now()-start_time
 
@@ -290,14 +234,3 @@ class LSAMatrix:
         else:
             return 0
 
-if __name__ == "__main__":
-    print np.__config__.show()
-    print "======================================================"
-    lsa = LSAMatrix(0, 0)
-    #print "The similarity between silicon and valley is: ", lsa.similarity("silicon","valley")
-    start_time = datetime.now()
-    str1 = "keynote"
-    str2 = "sunday"
-    print "Calculating the similarity...\n", lsa.term_similarity(str1,str2)
-    print "Similarity calculation cost: ", datetime.now()-start_time
-    #print lsa.lsa_matrix

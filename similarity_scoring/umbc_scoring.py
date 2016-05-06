@@ -32,15 +32,13 @@ def sim (token1, pos1, token2, pos2):
     simi = 0
     if token1 == token2 and pos1 == pos2:
         simi = 1.0
-    elif lsa_sim>0.8 and wn_sim<0.2:
-        simi = 0.5*lsa_sim + 0.5*(0.5+wn_sim)
-    elif lsa_sim <0.1 and wn_bst<0.8:#filter
+    elif lsa_sim>0.1:
+        simi = lsa_sim + wn_sim
+    elif lsa_sim <0.1:
         simi = 0
     else:
-        simi = 0.5*lsa_sim+0.5*wn_sim
-    #print token1, " and ", token2, " has similarity of ", simi
+        simi = lsa_sim
     # set the ceiling as mentioned in the paper
-    print token1, pos1, token2, pos2, "lsa: ",lsa_sim, "wn: ",wn_sim, "sim: ", simi
     if simi>1:
         simi = 1
     return simi
@@ -172,14 +170,14 @@ def umbc_sim (title1, title2):
             if Matrix[y,x]>simi:
                 simi = Matrix[y,x]
                 counterpart2 = tagged1[x][0]
-                print token2, counterpart2, simi
+                #print token2, counterpart2, simi
         penalty2 = umbc_penalty(token2, pos2, tokens2, simi, counterpart2)
         result2[token2] = {'sim':simi, 'p':penalty2, 'counter':counterpart2}
     #print datetime.now(), " Title2 result calculated..."
-    print result1
+    #print result1
     sum1 = umbc_sum(result1)
     sum1 = float(sum1)
-    print result2
+    #print result2
     sum2 = umbc_sum(result2)
     sum2 = float(sum2)
     #print sum1, sum2
@@ -190,24 +188,6 @@ def umbc_sim (title1, title2):
 
 
     return score
-
-def ini():
-    '''
-    initialize dates to be compared and query from database
-    initialize LSA_Matrix
-    :return:
-    '''
-    global lsa_mat
-    global wn_bst
-    global existing_articles
-    for i in range (FYPsetting.COMPARING_DATES):
-        day = date.today() - timedelta(i)
-        day_digi = "%04d%02d%02d" % (day.year, day.month, day.day)
-        titles = DBOperation.query_articles(day_digi)
-        #print datetime.now(), " Title2s extracted."
-        existing_articles.append(titles)
-
-    lsa_mat.update()
 
 def title_prepocessing(string):
     string = string.lstrip()
@@ -235,67 +215,5 @@ def title_prepocessing(string):
     string = re.sub(' +',' ',string)
     return string
 
-def sim_score(doc1, doc2):
-    return 0.5*umbc_sim(doc1[0], doc1[0])+ 0.5*tf_sim.cos_similarity(doc1[1], doc2[1])
-
-def article_cmp(curr_article = ("currencet title", "current body")):
-    '''
-
-    compare today's articles with previous 5 days
-    :return: a list of articles that are not similar with previous not others in today
-    '''
-    #ini()
-    global existing_articles
-    existing_articles = {"This is title 1":"This is body 1", "Here is title 1":"Here is body 1"}
-    article_candidates = {}
-    '''
-    #for curr_article in curr_articles:
-    '''
-    sim = False
-    # compare with newly selected candidates first
-    if not article_candidates=={}:
-        for candidate in article_candidates:
-            # This weight can be adjusted
-            score = sim_score(curr_article, candidate)
-            #print curr_article, candidate, "score is: ", score
-            if score > FYPsetting.SIMI_THRESHOLD:
-                sim = True
-                break
-
-    # then compare with articles fed to users earlier
-    if not sim:
-        '''
-        for i in range(1, FYPsetting.COMPARING_DATES):
-            print i
-            if existing_articles[i]:
-                if not sim:
-                    for existing_article in existing_articles[i]:# existing_articles is a list of article list by date
-                        score = sim_score(curr_article, existing_article)
-                        if score > FYPsetting.SIMI_THRESHOLD:
-                            sim = True
-                            break
-                else:
-                    break
-        '''
 
 
-        for existing_article in existing_articles:# existing_articles is a list of article list by date
-            score = sim_score(curr_article, existing_article)
-            #print curr_article, existing_article, "score is: ", score
-            if score > FYPsetting.SIMI_THRESHOLD:
-                sim = True
-                break
-
-
-    if not sim:
-        # is there any cases where two articles have the same title?
-        article_candidates[curr_article[0]]=curr_article[1]
-
-    return article_candidates
-
-if __name__ == '__main__':
-    #title_cmp()
-    #ini()
-    #print umbc_sim("Apple is bad.","Apple is good.")
-
-    print article_cmp()
