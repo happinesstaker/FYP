@@ -8,8 +8,9 @@ TITLE_LEN_LIMIT = 290
 LINK_LEN_LIMIT = 290
 TARGET_LEN_LIMIT = 190
 CONTENT_LEN_LIMIT = 5900
-COMPARING_DATES = 5
-SIMI_THRESHOLD = 2
+COMPARING_DATES = 3
+SIMI_THRESHOLD = 0.8
+KLD_THRESHOLD = 6 # This cut-off line need more learning
 LSA_DIMENSION = 300
 WINDOW_SIZE = 4
 
@@ -22,7 +23,7 @@ WORDNET_FORMAT = {"NN":'n',
 DB_CONFIG = {"dbname":"Articles",    
              "user":"FYP",
              "password":"FYP",
-             "host":"localhost",
+             "host":"54.201.171.89",
              "port":"5432"}
 
 TWITTER_CONFIG = {"access_key": "3780616332-PArbYD6xifva5Zo9oTUqg6yJlPwYa9WdR53Tdlk",
@@ -38,3 +39,4 @@ LINKEDIN_CONFIG = {"customer_id":"75uyw84y65lswo",
                    "oauth_token":"6f84134e-845b-4a82-aaa5-0033c187b410",
                    "oauth_secret":"5f282dbb-1922-4b6e-85f4-5d493e0bd92a"}
 
+TARGET_LIST = ['paypal', 'cisco', 'oyo-rooms', 'publicis', 'openstack', 'enternships', 'sequoia']

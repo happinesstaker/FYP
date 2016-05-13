@@ -43,7 +43,7 @@ class Parser:
 		#string = string.encode('latin-1', 'ignore')
 		string = string.lstrip()
 		string = string.rstrip()
-		string = string.replace("\'", "")
+		string = string.replace("\'", " ") #xxx's
 		string = string.replace("\"", "")
 		string = string.replace(".","")
 		string = string.replace("!","")
@@ -59,10 +59,12 @@ class Parser:
 		string = string.replace("}","")
 		string = string.replace("(","")
 		string = string.replace(")","")
+		string = string.replace("-", "_")
 		string = string.replace("\\", "")
 		string = string.replace("\s+"," ")
 		string = string.replace("\t", " ")
 		string = string.replace("\n", " ")
+		string = string.replace("\r", " ")
 		string = string.lower()
 		string = re.sub(' +',' ',string) # remove unwanted whitespace
 		return string

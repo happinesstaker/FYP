@@ -21,7 +21,7 @@ class LSA(Transform):
 		    Reduce the dimension of sigma by specified factor producing sigma'.
 		    Then dot product the matrices:  U . SIGMA' . VT = MATRIX'
 		"""
-		print datetime.now(), "   LSA transform called. "
+		#print datetime.now(), "   LSA transform called. "
 		rows,cols = self.matrix.get_shape()
 
 		if dimensions <= rows: #Its a valid reduction
@@ -34,9 +34,9 @@ class LSA(Transform):
 			for index in xrange(rows - dimensions, rows):
 				sigma[index] = 0
 			'''
-			print datetime.now(), " Decomposition finished, reconstruction starts..."
+			#print datetime.now(), " Decomposition finished, reconstruction starts..."
 			transformed_matrix = dot(u, linalg.diagsvd(sigma, len(u[0]), len(vt)))
-			print datetime.now(), "    First multiplication finished."
+			#print datetime.now(), "    First multiplication finished."
 			transformed_matrix = dot(transformed_matrix, vt)
 
 			return transformed_matrix

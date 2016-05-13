@@ -7,6 +7,7 @@ from semantic.transform.tfidf import TFIDF
 import FYPsetting
 from semantic.parser import Parser
 import numpy as np
+import DBOperation
 from sklearn.decomposition import TruncatedSVD, NMF
 
 class KLDistance:
@@ -35,7 +36,7 @@ class KLDistance:
                 doc = doc.replace("\n", " ")
 
             print datetime.now(), " Creating Vector Space..."
-            self.vs = VS_TF_SKL(docs[:301])
+            self.vs = VS_TF_SKL(docs[:401])
             print datetime.now(), " Vector space created."
 
 
@@ -46,6 +47,9 @@ class KLDistance:
         # replace it with " " to make it compatible with parser here
         term_list1 = parser.tokenise_and_remove_stop_words([doc1]) # the defined argument is document_list
         term_list2 = parser.tokenise_and_remove_stop_words([doc2]) # the defined argument is document_list
+
+        if 0 in (len(term_list1), len(term_list2)):
+            return (0,0)
 
         index1 = -1
         index2 = -1
@@ -59,9 +63,10 @@ class KLDistance:
             try:
                 index1 = self.vs.vector_index_to_keyword_mapping[word1]
             except:
-                print word1, ": indexing error 1"
+                #print word1, ": indexing error 1"
+                pass
 
-            print datetime.now(), " Indexing word1 completes."
+            #print datetime.now(), " Indexing word1 completes."
             if not index1 == -1:
                 index_vector1.append(index1)
 
@@ -73,6 +78,8 @@ class KLDistance:
             else:
                 index_count_dict1[index1]=1
         word_max = max(index_count_dict1, key=index_count_dict1.get)
+        if word_max ==0:
+            return (0,0)
         col1 = []
         for key in index_count_dict1:
             col1.append(key)
@@ -86,16 +93,17 @@ class KLDistance:
         row1 = [0]*(length1+1)
         term_vector1 = sp.coo_matrix((data1, (row1, col1)))
         term_vector1=self.vs.model.transform(term_vector1)
-        print datetime.now(), " Vector 1 built, cost ", datetime.now()-start_time
+        #print datetime.now(), " Vector 1 built, cost ", datetime.now()-start_time
 
         start_time = datetime.now()
         for word2 in term_list2:
             try:
                 index2 = self.vs.vector_index_to_keyword_mapping[word2]
             except:
-                print word2, ": indexing error 2"
+                #print word2, ": indexing error 2"
+                pass
 
-            print datetime.now(), " Indexing word2 completes."
+            #print datetime.now(), " Indexing word2 completes."
             if not index2 == -1:
                 index_vector2.append(index2)
 
@@ -107,7 +115,8 @@ class KLDistance:
             else:
                 index_count_dict2[index2]=1
         word_max = max(index_count_dict2, key=index_count_dict2.get)
-
+        if word_max ==0:
+            return (0,0)
         col2 = []
         for key in index_count_dict2:
             col2.append(key)
@@ -121,22 +130,22 @@ class KLDistance:
         row2 = [0]*(length2+1)
         term_vector2 = sp.coo_matrix((data2, (row2, col2)))
         term_vector2=self.vs.model.transform(term_vector2)
-        print datetime.now(), " Vector 1 built, cost ", datetime.now()-start_time
+        #print datetime.now(), " Vector 1 built, cost ", datetime.now()-start_time
 
         term_vector1 = term_vector1[0]
         term_vector2 = term_vector2[0]
-        vector_m =  [a+b for a,b in zip(map(lambda x: x*0.5, term_vector1),map(lambda x: x*0.5, term_vector2))]
-        result = 0
-        for i in range(len(vector_m)):
-            if not vector_m[i]==0:
-                result+= 0.5* term_vector1[i]*np.log1p(term_vector1[i]/vector_m[i])
-                result+= 0.5* term_vector2[i]*np.log1p(term_vector2[i]/vector_m[i])
-        return result
+        #vector_m =  [a+b for a,b in zip(map(lambda x: x*0.5, term_vector1),map(lambda x: x*0.5, term_vector2))]
+        result1 = 0
+        result2 = 0
+        for i in range(len(term_vector1)):
+            if not term_vector2[i]==0:
+                result1+= term_vector1[i]*np.log1p(term_vector1[i]/term_vector2[i])
+            else:
+                result1+= term_vector1[i]*np.log1p(term_vector1[i]/0.000001)
+            if not term_vector1[i]==0:
+                result2+= term_vector2[i]*np.log1p(term_vector2[i]/term_vector1[i])
+            else:
+                result2+= term_vector2[i]*np.log1p(term_vector2[i]/0.000001)
+        return (result1,result2)
 
 
-
-if __name__ == "__main__":
-    start_time = datetime.now()
-    kld = KLDistance()
-    print "Total time cost: ", datetime.now()-start_time
-    print kld.kl_divergence("silicon valley", "Lacob bugs")

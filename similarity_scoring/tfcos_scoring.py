@@ -77,7 +77,7 @@ class TfSim:
             except:
                 print word1, ": indexing error 1"
 
-            print datetime.now(), " Indexing word1 completes."
+            #print datetime.now(), " Indexing word1 completes."
             if not index1 == -1:
                 if term_vector1 ==[]:
                     term_vector1 = self.tfidf_matrix.getcol(index1).toarray().flatten()#to ndarray > become (X, 1) > flatten
@@ -93,7 +93,7 @@ class TfSim:
             except:
                 print word2, ": indexing error 2"
 
-            print datetime.now(), " Indexing word2 completes."
+            #print datetime.now(), " Indexing word2 completes."
             if not index2 == -1:
                 if term_vector2 ==[]:
                     term_vector2 = self.tfidf_matrix.getcol(index2).toarray().flatten()#[index2]
