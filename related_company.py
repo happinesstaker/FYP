@@ -14,7 +14,7 @@ def write_related_company(main_company):
     CONSUMER_SECRET = config["customer_secret"]   # This is secret_key
     USER_TOKEN = config["oauth_token"]   # This is oauth_token
     USER_SECRET = config["oauth_secret"]   # This is oauth_secret
-    RETURN_URL = "http://54.201.171.89/"
+    RETURN_URL = "54.201.171.89/fyp"
     
     # open application
     authentication = linkedin.LinkedInDeveloperAuthentication(CONSUMER_KEY, CONSUMER_SECRET, 
@@ -24,13 +24,14 @@ def write_related_company(main_company):
     application = linkedin.LinkedInApplication(authentication)
     
     # query for similar companies
-    #main_company = raw_input("Specify the main target company you want: ")
+    # main_company = raw_input("Specify the main target company you want: ")
     result = application.search_company(selectors=[{'companies': ['name', 'universal-name']}], params={'keywords': main_company})
     
     companies = result["companies"]["values"]
     company_list = [item["universalName"] for item in companies]
     company_dict = dict()
     
+    # previously process for user interactive input
     ''' For User Interactive purpose
     for index, value in enumerate(company_list):
         print str(index+1)+". "+value
@@ -67,19 +68,20 @@ def write_related_company(main_company):
             
     final_output = {"company_code":company_codes,
                     "all_companies":additional_company_list}
-                    
+    
+    # dump to json setting file
     with open("%s/target_companies.json" % os.path.dirname(os.path.realpath(__file__)),"w") as outfile:
         json.dump(final_output, outfile)
         #print "target_companies.json updated..."
         
-    # DB operation
+    # save company information to DB
     db_setting = FYPsetting.DB_CONFIG
     
     try:
         conn = psycopg2.connect("dbname='%s' user='%s' password='%s' host='%s' port='%s'" % (db_setting["dbname"], db_setting["user"], db_setting["password"], db_setting["host"], db_setting["port"]))
     except:
         print "Cannot Connect Database!"
-        exit(-1)
+        return
     
     cur = conn.cursor()
     conn.commit()
@@ -95,5 +97,3 @@ def write_related_company(main_company):
     
     cur.close()
     conn.close()
-    
-    return os.path.dirname(os.path.realpath(__file__))
